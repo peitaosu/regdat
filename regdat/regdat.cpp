@@ -8,5 +8,11 @@
 
 int main()
 {
-    std::cout << "Hello World!\n"; 
+    ORHKEY off_hive;
+    PCWSTR reg_file = L"registry.dat";
+    if (OROpenHive(reg_file, &off_hive) != ERROR_SUCCESS)
+    {
+        std::cout << "[ERROR] Cannot open hive file: " << reg_file << std::endl;
+        return -1;
+    }
 }
