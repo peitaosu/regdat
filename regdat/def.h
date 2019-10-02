@@ -1,0 +1,22 @@
+#pragma once
+
+#ifndef MAX_REG_KEY_NAME_SIZE
+#define MAX_REG_KEY_NAME_SIZE   255
+#endif // !MAX_REG_KEY_NAME_SIZE
+
+#ifndef MAX_REG_VALUE_NAME_SIZE
+#define MAX_REG_VALUE_NAME_SIZE 16383
+#endif // !MAX_REG_VALUE_NAME_SIZE
+
+#ifndef MAX_REG_VALUE_DATA_SIZE
+#define MAX_REG_VALUE_DATA_SIZE 1024000
+#endif // !MAX_REG_VALUE_DATA_SIZE
+
+#ifndef REG_VER_MAJOR
+#define REG_VER_MAJOR           6
+#endif // !REG_VER_MAJOR
+
+#ifndef REG_VER_MINOR
+#define REG_VER_MINOR           1
+#endif // !REG_VER_MINOR
+
