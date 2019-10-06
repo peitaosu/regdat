@@ -1,18 +1,24 @@
 // regdat.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include "pch.h"
 #include <iostream>
-#include <Windows.h>
-#include <offreg.h>
+#include "def.h"
+#include "common.h"
+#include "Options.h"
+#include "reg2dat.h"
 
-int main()
+int main(int argc, char **argv)
 {
-    ORHKEY off_hive;
-    PCWSTR reg_file = L"registry.dat";
-    if (OROpenHive(reg_file, &off_hive) != ERROR_SUCCESS)
-    {
-        std::cout << "[ERROR] Cannot open hive file: " << reg_file << std::endl;
-        return -1;
+    Options opts(argc, argv);
+    if (opts.check("--reg2dat")) {
+        if (!opts.check("--in_reg")) {
+            std::wcout << "--in_reg is required." << std::endl;
+            return -1;
+        }
+        if (!opts.check("--out_dat")) {
+            std::wcout << "--out_dat is required." << std::endl;
+            return -1;
+        }
+        Reg2Dat(opts.get_value("--in_reg"), opts.get_value("--out_dat"));
     }
 }
