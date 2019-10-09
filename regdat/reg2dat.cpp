@@ -18,21 +18,21 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
     }
     ORHKEY off_hive;
     ORCreateHive(&off_hive);
-    for (std::list<wstring>::iterator it = reg_lines.begin(); it != reg_lines.end(); ++it) {
-        if (it.at(0) == '['){
+    for (std::list<std::wstring>::iterator it = reg_lines.begin(); it != reg_lines.end(); ++it) {
+        if (it->at(0) == '['){
             //TODO: parse key
             continue;
         }
-        if (it.at(0) == '@'){
+        if (it->at(0) == '@'){
             //TODO: parse default value
             continue;
         }
-        if (it.at(0) == '"'){
+        if (it->at(0) == '"'){
             //TODO: parse value
         }
-        if (it.at(0) == ' ')
+        if (it->at(0) == ' ')
             continue;
-        if (it.find("Windows Registry Editor Version 5.00") == 0)
+        if (it->find(L"Windows Registry Editor Version 5.00") == 0)
             continue;
     }
     std::wstring out_dat_path_w(out_dat_path.begin(), out_dat_path.end());
