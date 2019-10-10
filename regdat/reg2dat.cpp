@@ -3,7 +3,7 @@
 
 int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
 {
-    if (file_exists(in_reg_path)) {
+    if (!file_exists(in_reg_path)) {
         std::cout << in_reg_path << " not exists." << std::endl;
         return -1;
     }
@@ -11,7 +11,7 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
     std::list<std::wstring> reg_lines;
     if (in_file.is_open()) {
         std::wstring line;
-        while (getline(in_file, line)) {
+        while (std::getline(in_file, line)) {
             reg_lines.push_back(line);
         }
         in_file.close();
