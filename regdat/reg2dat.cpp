@@ -7,18 +7,21 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
         std::cout << in_reg_path << " not exists." << std::endl;
         return -1;
     }
-    std::wifstream in_file(in_reg_path);
-    std::list<std::wstring> reg_lines;
+    std::ifstream in_file(in_reg_path);
+    std::list<std::string> reg_lines;
     if (in_file.is_open()) {
-        std::wstring line;
+        std::string line;
         while (std::getline(in_file, line)) {
+            line.erase(std::remove_if(line.begin(), line.end(),
+                [](char c) { return c =='\0' || c < 0; }), line.end());
             reg_lines.push_back(line);
+            std::cout << line << std::endl;
         }
         in_file.close();
     }
     ORHKEY off_hive;
     ORCreateHive(&off_hive);
-    for (std::list<std::wstring>::iterator it = reg_lines.begin(); it != reg_lines.end(); ++it) {
+    for (std::list<std::string>::iterator it = reg_lines.begin(); it != reg_lines.end(); ++it) {
         if (it->at(0) == '['){
             //TODO: parse key
             continue;
@@ -32,7 +35,7 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
         }
         if (it->at(0) == ' ')
             continue;
-        if (it->find(L"Windows Registry Editor Version 5.00") == 0)
+        if (it->find("Windows Registry Editor Version 5.00") == 0)
             continue;
     }
     std::wstring out_dat_path_w(out_dat_path.begin(), out_dat_path.end());
