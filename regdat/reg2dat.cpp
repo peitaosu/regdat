@@ -13,7 +13,7 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
         std::string line;
         while (std::getline(in_file, line)) {
             line.erase(std::remove_if(line.begin(), line.end(),
-                [](char c) { return c =='\0' || c < 0; }), line.end());
+                [](char c) { return c =='\0' || c < 0 || c == '\r'; }), line.end());
             reg_lines.push_back(line);
             std::cout << line << std::endl;
         }
@@ -23,7 +23,18 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
     ORCreateHive(&off_hive);
     for (std::list<std::string>::iterator it = reg_lines.begin(); it != reg_lines.end(); ++it) {
         if (it->at(0) == '['){
-            //TODO: parse key
+            std::list<std::string> keys;
+            std::string key_string = it->substr(1, it->length() - 2);
+            std::string delimiter = "\\";
+            size_t pos = 0;
+            std::string token;
+            while ((pos = key_string.find(delimiter)) != std::string::npos) {
+                token = key_string.substr(0, pos);
+                keys.push_back(token);
+                key_string.erase(0, pos + delimiter.length());
+            }
+            keys.push_back(key_string);
+            //TODO: parse keys
             continue;
         }
         if (it->at(0) == '@'){
