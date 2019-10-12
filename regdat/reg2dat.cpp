@@ -22,6 +22,9 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
     ORHKEY off_hive;
     ORCreateHive(&off_hive);
     for (std::list<std::string>::iterator it = reg_lines.begin(); it != reg_lines.end(); ++it) {
+        if (it->length() == 0) {
+            continue;
+        }
         if (it->at(0) == '['){
             std::list<std::string> keys;
             std::string key_string = it->substr(1, it->length() - 2);
