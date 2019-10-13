@@ -26,18 +26,9 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
             continue;
         }
         if (it->at(0) == '['){
-            std::list<std::string> keys;
             std::string key_string = it->substr(1, it->length() - 2);
-            std::string delimiter = "\\";
-            size_t pos = 0;
-            std::string token;
-            while ((pos = key_string.find(delimiter)) != std::string::npos) {
-                token = key_string.substr(0, pos);
-                keys.push_back(token);
-                key_string.erase(0, pos + delimiter.length());
-            }
-            keys.push_back(key_string);
-            //TODO: parse keys
+            PORHKEY result;
+            ORCreateKey(off_hive, key_string.c_str(), NULL, NULL, NULL, result, NULL);
             continue;
         }
         if (it->at(0) == '@'){
