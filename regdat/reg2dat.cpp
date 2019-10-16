@@ -21,19 +21,33 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
     }
     ORHKEY off_hive;
     ORCreateHive(&off_hive);
+    ORHKEY created_key;
     for (std::list<std::string>::iterator it = reg_lines.begin(); it != reg_lines.end(); ++it) {
         if (it->length() == 0 || (it->at(0) != '@' && it->at(0) != '[' && it->at(0) != '"')) {
+            ORCloseKey(created_key);
             continue;
         }
         if (it->at(0) == '['){
             std::string key_string = it->substr(1, it->length() - 2);
             std::wstring key_wstring = stringTowstring(key_string);
-            ORHKEY result;
-            ORCreateKey(off_hive, key_wstring.c_str(), NULL, NULL, NULL, &result, NULL);
+            ORCreateKey(off_hive, key_wstring.c_str(), NULL, NULL, NULL, &created_key, NULL);
             continue;
         }
         if (it->at(0) == '@'){
-            //TODO: parse default value
+            if (it->at(2) == '"') {
+                std::string data = it->substr(3, it->length() - 4);
+                ORSetValue(created_key, NULL, REG_SZ, (const BYTE*)data.c_str(), data.size() + 1);
+            } else {
+                if (it->substr(2, 4) == "hex:") {
+                    std::string data = it->substr(6, it->length() - 6);
+                    ORSetValue(created_key, NULL, REG_BINARY, (const BYTE*)data.c_str(), data.size() + 1);
+                } else {
+                    if (it->substr(2, 6) == "dword:") {
+                        std::string data = it->substr(8, it->length() - 8);
+                        ORSetValue(created_key, NULL, REG_DWORD, (const BYTE*)std::stoi(data), 4);
+                    }
+                }
+            }
             continue;
         }
         if (it->at(0) == '"'){
