@@ -51,6 +51,13 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
             continue;
         }
         if (it->at(0) == '"'){
+            std::string value_name = it->substr(1, it->find('=') - 1);
+            std::string value_data_string = it->substr(it->find('='), it->length() - it->find('=') - 1);
+            if (value_data_string.at(0) == '"') {
+                std::string value_date = value_data_string.substr(1, value_data_string.length() - 2);
+                ORSetValue(created_key, (stringTowstring(value_name)).c_str(), REG_SZ, (const BYTE*)value_date.c_str(), value_date.size() + 1);
+            }
+
             //TODO: parse value
         }
     }
