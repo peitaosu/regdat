@@ -56,9 +56,18 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
             if (value_data_string.at(0) == '"') {
                 std::string value_date = value_data_string.substr(1, value_data_string.length() - 2);
                 ORSetValue(created_key, (stringTowstring(value_name)).c_str(), REG_SZ, (const BYTE*)value_date.c_str(), value_date.size() + 1);
+            } else {
+                if (value_data_string.substr(2, 4) == "hex:") {
+                    std::string value_date = value_data_string.substr(6, value_data_string.length() - 6);
+                    ORSetValue(created_key, (stringTowstring(value_name)).c_str(), REG_BINARY, (const BYTE*)value_date.c_str(), value_date.size() + 1);
+                }
+                else {
+                    if (value_data_string.substr(2, 6) == "dword:") {
+                        std::string value_date = value_data_string.substr(8, value_data_string.length() - 8);
+                        ORSetValue(created_key, (stringTowstring(value_name)).c_str(), REG_DWORD, (const BYTE*)std::stoi(value_date), 4);
+                    }
+                }
             }
-
-            //TODO: parse value
         }
     }
     std::wstring out_dat_path_w(out_dat_path.begin(), out_dat_path.end());
