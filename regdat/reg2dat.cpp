@@ -72,5 +72,6 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
     }
     std::wstring out_dat_path_w(out_dat_path.begin(), out_dat_path.end());
     ORSaveHive(off_hive, out_dat_path_w.c_str(), REG_VER_MAJOR, REG_VER_MINOR);
+    ORCloseHive(off_hive);
     return 0;
 }
