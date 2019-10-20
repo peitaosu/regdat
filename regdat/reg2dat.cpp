@@ -21,10 +21,9 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
     }
     ORHKEY off_hive;
     ORCreateHive(&off_hive);
-    ORHKEY created_key;
+    ORHKEY created_key = NULL;
     for (std::list<std::string>::iterator it = reg_lines.begin(); it != reg_lines.end(); ++it) {
         if (it->length() == 0 || (it->at(0) != '@' && it->at(0) != '[' && it->at(0) != '"')) {
-            ORCloseKey(created_key);
             continue;
         }
         if (it->at(0) == '['){
