@@ -20,8 +20,11 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
         in_file.close();
     }
     ORHKEY off_hive;
-    ORCreateHive(&off_hive);
-    ORHKEY created_key = NULL;
+    if (ORCreateHive(&off_hive) != ERROR_SUCCESS) {
+        std::wcout << "[ERROR]: Cannot create hive: " << GetLastError() << std::endl;
+        return -1;
+    }
+    ORHKEY created_key;
     for (std::list<std::string>::iterator it = reg_lines.begin(); it != reg_lines.end(); ++it) {
         if (it->length() == 0 || (it->at(0) != '@' && it->at(0) != '[' && it->at(0) != '"')) {
             continue;
@@ -29,21 +32,24 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
         if (it->at(0) == '['){
             std::string key_string = it->substr(1, it->length() - 2);
             std::wstring key_wstring = stringTowstring(key_string);
-            ORCreateKey(off_hive, key_wstring.c_str(), NULL, NULL, NULL, &created_key, NULL);
+            if (ORCreateKey(off_hive, key_wstring.c_str(), NULL, REG_OPTION_NON_VOLATILE, NULL, &created_key, NULL) != ERROR_SUCCESS) {
+                std::wcout << "[ERROR]: Cannot create key: " << key_wstring << " error code: " << GetLastError() << std::endl;
+                return -1;
+            }
             continue;
         }
         if (it->at(0) == '@'){
             if (it->at(2) == '"') {
                 std::string data = it->substr(3, it->length() - 4);
-                ORSetValue(created_key, NULL, REG_SZ, (const BYTE*)data.c_str(), data.size() + 1);
+                //ORSetValue(created_key, NULL, REG_SZ, (const BYTE*)data.c_str(), data.size() + 1);
             } else {
                 if (it->substr(2, 4) == "hex:") {
                     std::string data = it->substr(6, it->length() - 6);
-                    ORSetValue(created_key, NULL, REG_BINARY, (const BYTE*)data.c_str(), data.size() + 1);
+                    //ORSetValue(created_key, NULL, REG_BINARY, (const BYTE*)data.c_str(), data.size() + 1);
                 } else {
                     if (it->substr(2, 6) == "dword:") {
                         std::string data = it->substr(8, it->length() - 8);
-                        ORSetValue(created_key, NULL, REG_DWORD, (const BYTE*)std::stoi(data), 4);
+                        //ORSetValue(created_key, NULL, REG_DWORD, (const BYTE*)std::stoi(data), 4);
                     }
                 }
             }
@@ -54,16 +60,16 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
             std::string value_data_string = it->substr(it->find('='), it->length() - it->find('=') - 1);
             if (value_data_string.at(0) == '"') {
                 std::string value_date = value_data_string.substr(1, value_data_string.length() - 2);
-                ORSetValue(created_key, (stringTowstring(value_name)).c_str(), REG_SZ, (const BYTE*)value_date.c_str(), value_date.size() + 1);
+                //ORSetValue(created_key, (stringTowstring(value_name)).c_str(), REG_SZ, (const BYTE*)value_date.c_str(), value_date.size() + 1);
             } else {
                 if (value_data_string.substr(2, 4) == "hex:") {
                     std::string value_date = value_data_string.substr(6, value_data_string.length() - 6);
-                    ORSetValue(created_key, (stringTowstring(value_name)).c_str(), REG_BINARY, (const BYTE*)value_date.c_str(), value_date.size() + 1);
+                    //ORSetValue(created_key, (stringTowstring(value_name)).c_str(), REG_BINARY, (const BYTE*)value_date.c_str(), value_date.size() + 1);
                 }
                 else {
                     if (value_data_string.substr(2, 6) == "dword:") {
                         std::string value_date = value_data_string.substr(8, value_data_string.length() - 8);
-                        ORSetValue(created_key, (stringTowstring(value_name)).c_str(), REG_DWORD, (const BYTE*)std::stoi(value_date), 4);
+                        //ORSetValue(created_key, (stringTowstring(value_name)).c_str(), REG_DWORD, (const BYTE*)std::stoi(value_date), 4);
                     }
                 }
             }
