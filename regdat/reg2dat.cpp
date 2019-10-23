@@ -1,5 +1,6 @@
 #include "reg2dat.h"
 #include <fstream>
+#include <sstream>
 
 int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
 {
@@ -24,17 +25,20 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
         std::wcout << "[ERROR]: Cannot create hive: " << GetLastError() << std::endl;
         return -1;
     }
-    ORHKEY created_key;
+    ORHKEY created_key = off_hive;
     for (std::list<std::string>::iterator it = reg_lines.begin(); it != reg_lines.end(); ++it) {
         if (it->length() == 0 || (it->at(0) != '@' && it->at(0) != '[' && it->at(0) != '"')) {
             continue;
         }
         if (it->at(0) == '['){
             std::string key_string = it->substr(1, it->length() - 2);
-            std::wstring key_wstring = stringTowstring(key_string);
-            if (ORCreateKey(off_hive, key_wstring.c_str(), NULL, REG_OPTION_NON_VOLATILE, NULL, &created_key, NULL) != ERROR_SUCCESS) {
-                std::wcout << "[ERROR]: Cannot create key: " << key_wstring << " error code: " << GetLastError() << std::endl;
-                return -1;
+            std::wistringstream is(stringTowstring(key_string));
+            std::wstring next_key_name;
+            while (std::getline(is, next_key_name, L'\\')) {
+                if (ORCreateKey(created_key, next_key_name.c_str(), NULL, REG_OPTION_NON_VOLATILE, NULL, &created_key, NULL) != ERROR_SUCCESS) {
+                    std::wcout << "[ERROR]: Cannot create key: " << next_key_name << " error code: " << GetLastError() << std::endl;
+                    return -1;
+                }
             }
             continue;
         }
