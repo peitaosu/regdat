@@ -44,15 +44,15 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
         }
         if (it->at(0) == '@'){
             if (it->at(2) == '"') {
-                std::string data = it->substr(3, it->length() - 4);
-                ORSetValue(created_key, NULL, REG_SZ, (const BYTE*)data.c_str(), data.size() + 1);
+                std::wstring data = stringTowstring(it->substr(3, it->length() - 4));
+                ORSetValue(created_key, NULL, REG_SZ, (LPBYTE)data.c_str(), (data.size() + 1) * sizeof(wchar_t));
             } else {
                 if (it->substr(2, 4) == "hex:") {
-                    std::string data = it->substr(6, it->length() - 6);
+                    std::wstring data = stringTowstring(it->substr(6, it->length() - 6));
                     ORSetValue(created_key, NULL, REG_BINARY, (const BYTE*)data.c_str(), data.size() + 1);
                 } else {
                     if (it->substr(2, 6) == "dword:") {
-                        std::string data = it->substr(8, it->length() - 8);
+                        std::wstring data = stringTowstring(it->substr(8, it->length() - 8));
                         ORSetValue(created_key, NULL, REG_DWORD, (const BYTE*)std::stoi(data), 4);
                     }
                 }
@@ -60,20 +60,20 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
             continue;
         }
         if (it->at(0) == '"'){
-            std::string value_name = it->substr(1, it->find('=') - 2);
-            std::string value_data_string = it->substr(it->find('=') + 1, it->length() - it->find('=') - 1);
+            std::wstring value_name = stringTowstring(it->substr(1, it->find('=') - 2));
+            std::wstring value_data_string = stringTowstring(it->substr(it->find('=') + 1, it->length() - it->find('=') - 1));
             if (value_data_string.at(0) == '"') {
-                std::string value_date = value_data_string.substr(1, value_data_string.length() - 2);
-                ORSetValue(created_key, (stringTowstring(value_name)).c_str(), REG_SZ, (const BYTE*)value_date.c_str(), value_date.size() + 1);
+                std::wstring value_date = value_data_string.substr(1, value_data_string.length() - 2);
+                ORSetValue(created_key, value_name.c_str(), REG_SZ, (LPBYTE)value_date.c_str(), (value_date.size() + 1) * sizeof(wchar_t));
             } else {
-                if (value_data_string.substr(2, 4) == "hex:") {
-                    std::string value_date = value_data_string.substr(6, value_data_string.length() - 6);
-                    ORSetValue(created_key, (stringTowstring(value_name)).c_str(), REG_BINARY, (const BYTE*)value_date.c_str(), value_date.size() + 1);
+                if (value_data_string.substr(2, 4) == L"hex:") {
+                    std::wstring value_date = value_data_string.substr(6, value_data_string.length() - 6);
+                    ORSetValue(created_key, value_name.c_str(), REG_BINARY, (const BYTE*)value_date.c_str(), value_date.size() + 1);
                 }
                 else {
-                    if (value_data_string.substr(2, 6) == "dword:") {
-                        std::string value_date = value_data_string.substr(8, value_data_string.length() - 8);
-                        ORSetValue(created_key, (stringTowstring(value_name)).c_str(), REG_DWORD, (const BYTE*)std::stoi(value_date), 4);
+                    if (value_data_string.substr(2, 6) == L"dword:") {
+                        std::wstring value_date = value_data_string.substr(8, value_data_string.length() - 8);
+                        ORSetValue(created_key, value_name.c_str(), REG_DWORD, (const BYTE*)std::stoi(value_date), 4);
                     }
                 }
             }
