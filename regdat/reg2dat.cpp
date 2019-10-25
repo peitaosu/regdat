@@ -8,15 +8,15 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
         std::cout << in_reg_path << " not exists." << std::endl;
         return -1;
     }
-    std::ifstream in_file(in_reg_path);
-    std::list<std::string> reg_lines;
+    std::wifstream in_file(in_reg_path);
+    std::list<std::wstring> reg_lines;
     if (in_file.is_open()) {
-        std::string line;
+        std::wstring line;
         while (std::getline(in_file, line)) {
             line.erase(std::remove_if(line.begin(), line.end(),
                 [](char c) { return c =='\0' || c < 0 || c == '\r'; }), line.end());
             reg_lines.push_back(line);
-            std::cout << line << std::endl;
+            std::wcout << line << std::endl;
         }
         in_file.close();
     }
@@ -26,13 +26,13 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
         return -1;
     }
     ORHKEY created_key = off_hive;
-    for (std::list<std::string>::iterator it = reg_lines.begin(); it != reg_lines.end(); ++it) {
+    for (std::list<std::wstring>::iterator it = reg_lines.begin(); it != reg_lines.end(); ++it) {
         if (it->length() == 0 || (it->at(0) != '@' && it->at(0) != '[' && it->at(0) != '"')) {
             continue;
         }
         if (it->at(0) == '['){
-            std::string key_string = it->substr(1, it->length() - 2);
-            std::wistringstream is(stringTowstring(key_string));
+            std::wstring key_string = it->substr(1, it->length() - 2);
+            std::wistringstream is(key_string);
             std::wstring next_key_name;
             while (std::getline(is, next_key_name, L'\\')) {
                 if (ORCreateKey(created_key, next_key_name.c_str(), NULL, REG_OPTION_NON_VOLATILE, NULL, &created_key, NULL) != ERROR_SUCCESS) {
@@ -44,15 +44,15 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
         }
         if (it->at(0) == '@'){
             if (it->at(2) == '"') {
-                std::wstring data = stringTowstring(it->substr(3, it->length() - 4));
+                std::wstring data = it->substr(3, it->length() - 4);
                 ORSetValue(created_key, NULL, REG_SZ, (LPBYTE)data.c_str(), (data.size() + 1) * sizeof(wchar_t));
             } else {
-                if (it->substr(2, 4) == "hex:") {
-                    std::wstring data = stringTowstring(it->substr(6, it->length() - 6));
+                if (it->substr(2, 4) == L"hex:") {
+                    std::wstring data = it->substr(6, it->length() - 6);
                     ORSetValue(created_key, NULL, REG_BINARY, (const BYTE*)data.c_str(), data.size() + 1);
                 } else {
-                    if (it->substr(2, 6) == "dword:") {
-                        std::wstring data = stringTowstring(it->substr(8, it->length() - 8));
+                    if (it->substr(2, 6) == L"dword:") {
+                        std::wstring data = it->substr(8, it->length() - 8);
                         ORSetValue(created_key, NULL, REG_DWORD, (const BYTE*)std::stoi(data), 4);
                     }
                 }
@@ -60,8 +60,8 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
             continue;
         }
         if (it->at(0) == '"'){
-            std::wstring value_name = stringTowstring(it->substr(1, it->find('=') - 2));
-            std::wstring value_data_string = stringTowstring(it->substr(it->find('=') + 1, it->length() - it->find('=') - 1));
+            std::wstring value_name = it->substr(1, it->find('=') - 2);
+            std::wstring value_data_string = it->substr(it->find('=') + 1, it->length() - it->find('=') - 1);
             if (value_data_string.at(0) == '"') {
                 std::wstring value_date = value_data_string.substr(1, value_data_string.length() - 2);
                 ORSetValue(created_key, value_name.c_str(), REG_SZ, (LPBYTE)value_date.c_str(), (value_date.size() + 1) * sizeof(wchar_t));
