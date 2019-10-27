@@ -49,12 +49,13 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
             } else {
                 if (it->substr(2, 4) == L"hex:") {
                     std::wstring value_date = it->substr(6, it->length() - 6);
-                    ORSetValue(created_key, NULL, REG_BINARY, (const BYTE*)value_date.c_str(), value_date.size() + 1);
+                    std::wstring data = string2wstring(hex2string(wstring2string(value_date)));
+                    ORSetValue(created_key, NULL, REG_BINARY, (LPBYTE)data.c_str(), (data.size() + 1) * sizeof(wchar_t));
                 } else {
                     if (it->substr(2, 6) == L"dword:") {
                         std::wstring value_date = it->substr(8, it->length() - 8);
                         DWORD value = std::stoi(value_date);
-                        ORSetValue(created_key, NULL, REG_DWORD, (const BYTE*)value, sizeof(value));
+                        ORSetValue(created_key, NULL, REG_DWORD, (LPBYTE)value, sizeof(value));
                     }
                 }
             }
@@ -69,13 +70,14 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
             } else {
                 if (value_data_string.substr(2, 4) == L"hex:") {
                     std::wstring value_date = value_data_string.substr(6, value_data_string.length() - 6);
-                    ORSetValue(created_key, value_name.c_str(), REG_BINARY, (const BYTE*)value_date.c_str(), value_date.size() + 1);
+                    std::wstring data = string2wstring(hex2string(wstring2string(value_date)));
+                    ORSetValue(created_key, value_name.c_str(), REG_BINARY, (LPBYTE)data.c_str(), (data.size() + 1) * sizeof(wchar_t));
                 }
                 else {
                     if (value_data_string.substr(2, 6) == L"dword:") {
                         std::wstring value_date = value_data_string.substr(8, value_data_string.length() - 8);
                         DWORD value = std::stoi(value_date);
-                        ORSetValue(created_key, value_name.c_str(), REG_DWORD, (const BYTE*)value, sizeof(value));
+                        ORSetValue(created_key, value_name.c_str(), REG_DWORD, (LPBYTE)value, sizeof(value));
                     }
                 }
             }

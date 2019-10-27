@@ -3,5 +3,8 @@
 #include <filesystem>
 
 bool file_exists(std::string file_path);
-std::wstring stringTowstring(std::string str);
-std::string wstringTostring(std::wstring wstr);
+std::wstring string2wstring(std::string str);
+std::string wstring2string(std::wstring wstr);
+std::string hex2string(std::string hex);
+std::string string2hex(std::string string);
+
