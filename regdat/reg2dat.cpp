@@ -51,7 +51,7 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
             if (it->substr(2, 6) == L"dword:") {
                 std::wstring value_date = it->substr(8, it->length() - 8);
                 DWORD value = std::stoi(value_date);
-                ORSetValue(created_key, NULL, REG_DWORD, (LPBYTE)value, sizeof(value));
+                ORSetValue(created_key, NULL, REG_DWORD, (LPBYTE)&value, sizeof(value));
                 continue;
             }
             if (it->substr(2, 4) == L"hex:") {
@@ -82,27 +82,27 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
                 ORSetValue(created_key, value_name.c_str(), REG_SZ, (LPBYTE)value_date.c_str(), (value_date.size() + 1) * sizeof(wchar_t));
                 continue;
             }
-            if (value_data_string.substr(2, 6) == L"dword:") {
+            if (value_data_string.substr(0, 6) == L"dword:") {
                 std::wstring value_date = value_data_string.substr(8, value_data_string.length() - 8);
                 DWORD value = std::stoi(value_date);
-                ORSetValue(created_key, value_name.c_str(), REG_DWORD, (LPBYTE)value, sizeof(value));
+                ORSetValue(created_key, value_name.c_str(), REG_DWORD, (LPBYTE)&value, sizeof(value));
                 continue;
             }
-            if (value_data_string.substr(2, 4) == L"hex:") {
+            if (value_data_string.substr(0, 4) == L"hex:") {
                 std::wstring value_date = value_data_string.substr(6, value_data_string.length() - 6);
                 std::wstring data = string2wstring(hex2string(wstring2string(value_date)));
                 ORSetValue(created_key, value_name.c_str(), REG_BINARY, (LPBYTE)data.c_str(), (data.size() + 1) * sizeof(wchar_t));
                 continue;
             }
-            if (it->substr(2, 7) == L"hex(2):") {
+            if (value_data_string.substr(0, 7) == L"hex(2):") {
                 //TODO: Expand String
                 continue;
             }
-            if (it->substr(2, 7) == L"hex(7):") {
+            if (value_data_string.substr(0, 7) == L"hex(7):") {
                 //TODO: Multi-Stings
                 continue;
             }
-            if (it->substr(2, 7) == L"hex(b):") {
+            if (value_data_string.substr(0, 7) == L"hex(b):") {
                 //TODO: QWORD
                 continue;
             }
