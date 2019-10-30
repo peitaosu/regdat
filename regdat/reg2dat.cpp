@@ -50,7 +50,7 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
             }
             if (it->substr(2, 6) == L"dword:") {
                 std::wstring value_date = it->substr(8, it->length() - 8);
-                DWORD value = std::stoi(value_date);
+                DWORD value = std::stoi(value_date, 0, 16);
                 ORSetValue(created_key, NULL, REG_DWORD, (LPBYTE)&value, sizeof(value));
                 continue;
             }
@@ -84,7 +84,7 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
             }
             if (value_data_string.substr(0, 6) == L"dword:") {
                 std::wstring value_date = value_data_string.substr(8, value_data_string.length() - 8);
-                DWORD value = std::stoi(value_date);
+                DWORD value = std::stoi(value_date, 0, 16);
                 ORSetValue(created_key, value_name.c_str(), REG_DWORD, (LPBYTE)&value, sizeof(value));
                 continue;
             }
