@@ -42,70 +42,39 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
             }
             continue;
         }
-        if (it->at(0) == '@'){
-            if (it->at(2) == '"') {
-                std::wstring value_date = it->substr(3, it->length() - 4);
-                ORSetValue(created_key, NULL, REG_SZ, (LPBYTE)value_date.c_str(), (value_date.size() + 1) * sizeof(wchar_t));
-                continue;
-            }
-            if (it->substr(2, 6) == L"dword:") {
-                std::wstring value_date = it->substr(8, it->length() - 8);
-                DWORD value = std::stoi(value_date, 0, 16);
-                ORSetValue(created_key, NULL, REG_DWORD, (LPBYTE)&value, sizeof(value));
-                continue;
-            }
-            if (it->substr(2, 4) == L"hex:") {
-                std::wstring value_date = it->substr(6, it->length() - 6);
-                std::wstring data = string2wstring(hex2string(wstring2string(value_date)));
-                ORSetValue(created_key, NULL, REG_BINARY, (LPBYTE)data.c_str(), (data.size() + 1) * sizeof(wchar_t));
-                continue;
-            }
-            if (it->substr(2, 7) == L"hex(2):") {
-                //TODO: Expand String
-                continue;
-            }
-            if (it->substr(2, 7) == L"hex(7):") {
-                //TODO: Multi-Stings
-                continue;
-            }
-            if (it->substr(2, 7) == L"hex(b):") {
-               //TODO: QWORD
-                continue;
-            }
+        std::wstring value_name_string = it->substr(0, it->find('=') - 1);
+        std::wstring value_data_string = it->substr(it->find('=') + 1, it->length() - it->find('=') - 1);
+        LPCWSTR value_name = NULL;
+        if (value_name_string != L"@") {
+            value_name = value_name_string.substr(1, value_name_string.length() - 2).c_str();
+        }
+        if (value_data_string.at(0) == '"') {
+            std::wstring value_date = value_data_string.substr(1, value_data_string.length() - 2);
+            ORSetValue(created_key, value_name, REG_SZ, (LPBYTE)value_date.c_str(), (value_date.size() + 1) * sizeof(wchar_t));
             continue;
         }
-        if (it->at(0) == '"'){
-            std::wstring value_name = it->substr(1, it->find('=') - 2);
-            std::wstring value_data_string = it->substr(it->find('=') + 1, it->length() - it->find('=') - 1);
-            if (value_data_string.at(0) == '"') {
-                std::wstring value_date = value_data_string.substr(1, value_data_string.length() - 2);
-                ORSetValue(created_key, value_name.c_str(), REG_SZ, (LPBYTE)value_date.c_str(), (value_date.size() + 1) * sizeof(wchar_t));
-                continue;
-            }
-            if (value_data_string.substr(0, 6) == L"dword:") {
-                std::wstring value_date = value_data_string.substr(8, value_data_string.length() - 8);
-                DWORD value = std::stoi(value_date, 0, 16);
-                ORSetValue(created_key, value_name.c_str(), REG_DWORD, (LPBYTE)&value, sizeof(value));
-                continue;
-            }
-            if (value_data_string.substr(0, 4) == L"hex:") {
-                std::wstring value_date = value_data_string.substr(6, value_data_string.length() - 6);
-                std::wstring data = string2wstring(hex2string(wstring2string(value_date)));
-                ORSetValue(created_key, value_name.c_str(), REG_BINARY, (LPBYTE)data.c_str(), (data.size() + 1) * sizeof(wchar_t));
-                continue;
-            }
-            if (value_data_string.substr(0, 7) == L"hex(2):") {
-                //TODO: Expand String
-                continue;
-            }
-            if (value_data_string.substr(0, 7) == L"hex(7):") {
-                //TODO: Multi-Stings
-                continue;
-            }
-            if (value_data_string.substr(0, 7) == L"hex(b):") {
-                //TODO: QWORD
-                continue;
-            }
+        if (value_data_string.substr(0, 6) == L"dword:") {
+            std::wstring value_date = value_data_string.substr(8, value_data_string.length() - 8);
+            DWORD value = std::stoi(value_date, 0, 16);
+            ORSetValue(created_key, value_name, REG_DWORD, (LPBYTE)&value, sizeof(value));
+            continue;
+        }
+        if (value_data_string.substr(0, 4) == L"hex:") {
+            std::wstring value_date = value_data_string.substr(6, value_data_string.length() - 6);
+            std::wstring data = string2wstring(hex2string(wstring2string(value_date)));
+            ORSetValue(created_key, value_name, REG_BINARY, (LPBYTE)data.c_str(), (data.size() + 1) * sizeof(wchar_t));
+            continue;
+        }
+        if (value_data_string.substr(0, 7) == L"hex(2):") {
+            //TODO: Expand String
+            continue;
+        }
+        if (value_data_string.substr(0, 7) == L"hex(7):") {
+            //TODO: Multi-Stings
+            continue;
+        }
+        if (value_data_string.substr(0, 7) == L"hex(b):") {
+            //TODO: QWORD
             continue;
         }
     }
