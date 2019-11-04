@@ -16,7 +16,6 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
             line.erase(std::remove_if(line.begin(), line.end(),
                 [](char c) { return c <= 0 || c == '\r'; }), line.end());
             reg_lines.push_back(line);
-            std::wcout << line << std::endl;
         }
         in_file.close();
     }
