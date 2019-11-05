@@ -22,7 +22,7 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
     ORHKEY off_hive;
     if (ORCreateHive(&off_hive) != ERROR_SUCCESS) {
         std::wcout << "[ERROR]: Cannot create hive: " << GetLastError() << std::endl;
-        return -1;
+        return ERROR_CREATE_HIVE_FAILED;
     }
     ORHKEY created_key = off_hive;
     for (std::list<std::wstring>::iterator it = reg_lines.begin(); it != reg_lines.end(); ++it) {
