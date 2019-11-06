@@ -6,7 +6,7 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
 {
     if (!file_exists(in_reg_path)) {
         std::cout << in_reg_path << " not exists." << std::endl;
-        return -1;
+        return ERROR_FILE_NOT_FOUND;
     }
     std::wifstream in_file(in_reg_path);
     std::list<std::wstring> reg_lines;
@@ -36,7 +36,7 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
             while (std::getline(is, next_key_name, L'\\')) {
                 if (ORCreateKey(created_key, next_key_name.c_str(), NULL, REG_OPTION_NON_VOLATILE, NULL, &created_key, NULL) != ERROR_SUCCESS) {
                     std::wcout << "[ERROR]: Cannot create key: " << next_key_name << " error code: " << GetLastError() << std::endl;
-                    return -1;
+                    return ERROR_CREATE_KEY_FAILED;
                 }
             }
             continue;
@@ -80,5 +80,5 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
     std::wstring out_dat_path_w(out_dat_path.begin(), out_dat_path.end());
     ORSaveHive(off_hive, out_dat_path_w.c_str(), REG_VER_MAJOR, REG_VER_MINOR);
     ORCloseHive(off_hive);
-    return 0;
+    return SUCCEED;
 }
