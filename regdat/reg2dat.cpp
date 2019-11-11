@@ -6,7 +6,7 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
 {
     if (!file_exists(in_reg_path)) {
         std::cout << in_reg_path << " not exists." << std::endl;
-        return ERROR_FILE_NOT_FOUND;
+        return ERROR_REG_FILE_NOT_FOUND;
     }
     std::wifstream in_file(in_reg_path);
     std::list<std::wstring> reg_lines;
