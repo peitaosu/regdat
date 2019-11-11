@@ -9,7 +9,7 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
         return ERROR_REG_FILE_NOT_FOUND;
     }
     std::wifstream in_file(in_reg_path);
-    std::list<std::wstring> reg_lines;
+    std::vector<std::wstring> reg_lines;
     if (in_file.is_open()) {
         std::wstring line;
         while (std::getline(in_file, line)) {
@@ -25,12 +25,12 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
         return ERROR_CREATE_HIVE_FAILED;
     }
     ORHKEY created_key = off_hive;
-    for (std::list<std::wstring>::iterator it = reg_lines.begin(); it != reg_lines.end(); ++it) {
-        if (it->length() == 0 || (it->at(0) != '@' && it->at(0) != '[' && it->at(0) != '"')) {
+    for (std::wstring reg_line : reg_lines) {
+        if (reg_line.length() == 0 || (reg_line.at(0) != '@' && reg_line.at(0) != '[' && reg_line.at(0) != '"')) {
             continue;
         }
-        if (it->at(0) == '['){
-            std::wstring key_string = it->substr(1, it->length() - 2);
+        if (reg_line.at(0) == '['){
+            std::wstring key_string = reg_line.substr(1, reg_line.length() - 2);
             std::wistringstream is(key_string);
             std::wstring next_key_name;
             while (std::getline(is, next_key_name, L'\\')) {
@@ -41,8 +41,8 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
             }
             continue;
         }
-        std::wstring value_name_string = it->substr(0, it->find('=') - 1);
-        std::wstring value_data_string = it->substr(it->find('=') + 1, it->length() - it->find('=') - 1);
+        std::wstring value_name_string = reg_line.substr(0, reg_line.find('=') - 1);
+        std::wstring value_data_string = reg_line.substr(reg_line.find('=') + 1, reg_line.length() - reg_line.find('=') - 1);
         LPCWSTR value_name = NULL;
         if (value_name_string != L"@") {
             value_name = value_name_string.substr(1, value_name_string.length() - 2).c_str();
