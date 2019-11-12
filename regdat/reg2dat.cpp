@@ -16,7 +16,7 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
             std::wstring line_str = L"";
             for (int i = 0; i < line.length(); i++) {
                 // remove \0 and <0 characters
-                if (line[i] <= 0) continue;
+                if (line[i] <= 0 || line[i] == '\r') continue;
                 line_str += line[i];
             }
             reg_lines.push_back(line_str);
@@ -45,11 +45,12 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
             }
             continue;
         }
-        std::wstring value_name_string = reg_line.substr(0, reg_line.find('=') - 1);
+        std::wstring value_name_string = reg_line.substr(0, reg_line.find('='));
         std::wstring value_data_string = reg_line.substr(reg_line.find('=') + 1, reg_line.length() - reg_line.find('=') - 1);
         LPCWSTR value_name = NULL;
         if (value_name_string != L"@") {
-            value_name = value_name_string.substr(1, value_name_string.length() - 2).c_str();
+            value_name_string = value_name_string.substr(1, value_name_string.length() - 2);
+            value_name = value_name_string.c_str();
         }
         if (value_data_string.at(0) == '"') {
             std::wstring value_data = value_data_string.substr(1, value_data_string.length() - 2);
