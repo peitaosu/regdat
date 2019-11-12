@@ -13,9 +13,13 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
     if (in_file.is_open()) {
         std::wstring line;
         while (std::getline(in_file, line)) {
-            line.erase(std::remove_if(line.begin(), line.end(),
-                [](char c) { return c <= 0 || c == '\r'; }), line.end());
-            reg_lines.push_back(line);
+            std::wstring line_str = L"";
+            for (int i = 0; i < line.length(); i++) {
+                // remove \0 and <0 characters
+                if (line[i] <= 0) continue;
+                line_str += line[i];
+            }
+            reg_lines.push_back(line_str);
         }
         in_file.close();
     }
@@ -49,7 +53,7 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
         }
         if (value_data_string.at(0) == '"') {
             std::wstring value_data = value_data_string.substr(1, value_data_string.length() - 2);
-            ORSetValue(created_key, value_name, REG_SZ, (LPBYTE)value_data.c_str(), (value_data.size() + 1) * sizeof(wchar_t));
+            ORSetValue(created_key, value_name, REG_SZ, (LPBYTE)value_data.c_str(), sizeof(value_data));
             continue;
         }
         if (value_data_string.substr(0, 6) == L"dword:") {
@@ -61,7 +65,7 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
         if (value_data_string.substr(0, 4) == L"hex:") {
             std::wstring value_data = value_data_string.substr(6, value_data_string.length() - 6);
             std::wstring data = string2wstring(hex2string(wstring2string(value_data)));
-            ORSetValue(created_key, value_name, REG_BINARY, (LPBYTE)data.c_str(), (data.size() + 1) * sizeof(wchar_t));
+            ORSetValue(created_key, value_name, REG_BINARY, (LPBYTE)data.c_str(), sizeof(value_data));
             continue;
         }
         if (value_data_string.substr(0, 7) == L"hex(2):") {
@@ -78,6 +82,9 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
         }
     }
     std::wstring out_dat_path_w(out_dat_path.begin(), out_dat_path.end());
+    if (file_exists(out_dat_path)) {
+        delete_file(out_dat_path);
+    }
     ORSaveHive(off_hive, out_dat_path_w.c_str(), REG_VER_MAJOR, REG_VER_MINOR);
     ORCloseHive(off_hive);
     return SUCCEED;
