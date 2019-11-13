@@ -12,14 +12,27 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
     std::vector<std::wstring> reg_lines;
     if (in_file.is_open()) {
         std::wstring line;
+        bool not_ended = false;
+        std::wstring not_ended_str = L"";
         while (std::getline(in_file, line)) {
             std::wstring line_str = L"";
             for (int i = 0; i < line.length(); i++) {
                 // remove \0 and <0 characters
-                if (line[i] <= 0 || line[i] == '\r') continue;
+                if (line[i] <= 0 || line[i] == '\r' || line[i] == 32) continue;
                 line_str += line[i];
             }
-            reg_lines.push_back(line_str);
+            if (line_str.length() == 0) continue;
+            if (not_ended) {
+                line_str = not_ended_str + line_str;
+            }
+            if (*line_str.rbegin() == '\\') {
+                not_ended = true;
+                not_ended_str = line_str.substr(0, line_str.length() - 1);
+            }
+            else {
+                not_ended = false;
+                reg_lines.push_back(line_str);
+            }
         }
         in_file.close();
     }
@@ -83,11 +96,22 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
                 if (next_char == L"00") continue;
                 data += std::stoi(next_char, 0, 16);
             }
-            ORSetValue(created_key, value_name, REG_EXPAND_SZ, (LPBYTE)data.c_str(), sizeof(data));
+            ORSetValue(created_key, value_name, REG_EXPAND_SZ, (LPBYTE)data.c_str(), (DWORD)((data.size() + 1) * sizeof(wchar_t)));
             continue;
         }
         if (value_data_string.substr(0, 7) == L"hex(7):") {
-            //TODO: Multi-Stings
+            std::wstring value_data = value_data_string.substr(7, value_data_string.length() - 7);
+            std::wistringstream is(value_data);
+            std::wstring next_char;
+            std::vector<int> dataArray;
+            while (std::getline(is, next_char, L',')) {
+                dataArray.push_back(std::stoi(next_char, 0, 16));
+            }
+            std::wstring data;
+            for (int i = 0; i < dataArray.size(); i += 2) {
+                data += dataArray[i];
+            }
+            ORSetValue(created_key, value_name, REG_MULTI_SZ, (LPBYTE)data.c_str(), (DWORD)((data.size() + 1) * sizeof(wchar_t)));
             continue;
         }
         if (value_data_string.substr(0, 7) == L"hex(b):") {
