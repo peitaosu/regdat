@@ -83,7 +83,15 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
             continue;
         }
         if (value_data_string.substr(0, 7) == L"hex(b):") {
-            //TODO: QWORD
+            std::wstring value_data = value_data_string.substr(7, value_data_string.length() - 7);
+            std::wistringstream is(value_data);
+            std::wstring next_char;
+            std::wstring data;
+            while (std::getline(is, next_char, L',')) {
+                data = next_char + data;
+            }
+            unsigned long long q_data = std::stoi(data, 0, 16);
+            ORSetValue(created_key, value_name, REG_QWORD, (LPBYTE)&q_data, sizeof(q_data));
             continue;
         }
     }
