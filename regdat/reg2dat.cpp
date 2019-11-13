@@ -58,15 +58,20 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
             continue;
         }
         if (value_data_string.substr(0, 6) == L"dword:") {
-            std::wstring value_data = value_data_string.substr(8, value_data_string.length() - 8);
+            std::wstring value_data = value_data_string.substr(6, value_data_string.length() - 6);
             DWORD value = std::stoi(value_data, 0, 16);
             ORSetValue(created_key, value_name, REG_DWORD, (LPBYTE)&value, sizeof(value));
             continue;
         }
         if (value_data_string.substr(0, 4) == L"hex:") {
-            std::wstring value_data = value_data_string.substr(6, value_data_string.length() - 6);
-            std::wstring data = string2wstring(hex2string(wstring2string(value_data)));
-            ORSetValue(created_key, value_name, REG_BINARY, (LPBYTE)data.c_str(), sizeof(value_data));
+            std::wstring value_data = value_data_string.substr(4, value_data_string.length() - 4);
+            std::wistringstream is(value_data);
+            std::wstring next_char;
+            std::string data;
+            while (std::getline(is, next_char, L',')) {
+                data += std::stoi(next_char, 0, 16);
+            }
+            ORSetValue(created_key, value_name, REG_BINARY, (LPBYTE)data.c_str(), (DWORD)data.size());
             continue;
         }
         if (value_data_string.substr(0, 7) == L"hex(2):") {
