@@ -11,6 +11,7 @@ static const std::map<int, std::string> Errors = {
    {ERROR_OPEN_HIVE_FAILED, "Open registry hive failed."},
    {ERROR_CREATE_HIVE_FAILED, "Create registry hive failed."},
    {ERROR_CREATE_KEY_FAILED, "Create registry key failed."},
+   {ERROR_DELETE_DAT_FAILED, "Delete dat file failed."},
 };
 std::string GetErrorMessage(int error);
 void PrintErrorMessage(int error);

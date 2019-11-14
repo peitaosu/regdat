@@ -129,7 +129,11 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
     }
     std::wstring out_dat_path_w(out_dat_path.begin(), out_dat_path.end());
     if (file_exists(out_dat_path)) {
-        delete_file(out_dat_path);
+        if (!delete_file(out_dat_path)) {
+            PrintErrorMessageWithDetail(ERROR_DELETE_DAT_FAILED, out_dat_path);
+            ORCloseHive(off_hive);
+            return ERROR_DELETE_DAT_FAILED;
+        }
     }
     ORSaveHive(off_hive, out_dat_path_w.c_str(), REG_VER_MAJOR, REG_VER_MINOR);
     ORCloseHive(off_hive);
