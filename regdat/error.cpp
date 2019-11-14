@@ -7,5 +7,10 @@ std::string GetErrorMessage(int error)
 
 void PrintErrorMessage(int error)
 {
-    std::cout << "[Error]: " << GetErrorMessage(error) << std::endl;
+    std::cout << "[Error] " << GetErrorMessage(error) << std::endl;
+}
+
+void PrintErrorMessageWithDetail(int error, std::string detail)
+{
+    std::cout << "[Error] " << GetErrorMessage(error) << " : " << detail << std::endl;
 }

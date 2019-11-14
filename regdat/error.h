@@ -14,3 +14,4 @@ static const std::map<int, std::string> Errors = {
 };
 std::string GetErrorMessage(int error);
 void PrintErrorMessage(int error);
+void PrintErrorMessageWithDetail(int error, std::string detail);
