@@ -2,7 +2,7 @@
 #include <fstream>
 #include <sstream>
 
-int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
+int reg2dat(std::string in_reg_path, std::string out_dat_path)
 {
     if (!file_exists(in_reg_path)) {
         PrintErrorMessageWithDetail(ERROR_REG_FILE_NOT_FOUND, in_reg_path + " not exists.");
@@ -136,6 +136,18 @@ int Reg2Dat(std::string in_reg_path, std::string out_dat_path)
         }
     }
     ORSaveHive(off_hive, out_dat_path_w.c_str(), REG_VER_MAJOR, REG_VER_MINOR);
+    ORCloseHive(off_hive);
+    return SUCCEED;
+}
+
+int dat2reg(std::string in_dat_path, std::string out_reg_path) {
+    if (!file_exists(in_dat_path)) {
+        PrintErrorMessageWithDetail(ERROR_DAT_FILE_NOT_FOUND, in_dat_path + " not exists.");
+        return ERROR_DAT_FILE_NOT_FOUND;
+    }
+    std::wstring in_dat_path_w = string2wstring(in_dat_path);
+    ORHKEY off_hive;
+    OROpenHive(in_dat_path_w.c_str(), &off_hive);
     ORCloseHive(off_hive);
     return SUCCEED;
 }

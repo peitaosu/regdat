@@ -6,4 +6,5 @@
 #include "common.h"
 #include "error.h"
 
-int Reg2Dat(std::string in_reg_path, std::string out_dat_path);
+int reg2dat(std::string in_reg_path, std::string out_dat_path);
+int dat2reg(std::string in_dat_path, std::string out_reg_path);

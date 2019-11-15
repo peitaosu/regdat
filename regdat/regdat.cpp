@@ -11,7 +11,7 @@ int main(int argc, char **argv)
 {
     Options opts(argc, argv);
     if (opts.check("--help") || opts.check("-h")) {
-        std::cout << "Usage:\n\tregdat.exe --reg2dat --in_reg <path_to_reg_file> --out_dat <path_to_dat_file>\n\tregdat.exe -h\\--help" << std::endl;
+        std::cout << "Usage:\n\tregdat.exe --reg2dat --in_reg <path_to_reg_file> --out_dat <path_to_dat_file>\n\tregdat.exe --dat2reg --in_dat <path_to_dat_file> --out_reg <path_to_reg_file>\n\tregdat.exe -h\\--help" << std::endl;
         return SUCCEED;
     }
     if (opts.check("--reg2dat")) {
@@ -23,6 +23,18 @@ int main(int argc, char **argv)
             PrintErrorMessageWithDetail(ERROR_PARAMETER_MISSED, "--out_dat is required.");
             return ERROR_PARAMETER_MISSED;
         }
-        return Reg2Dat(opts.get_value("--in_reg"), opts.get_value("--out_dat"));
+        return reg2dat(opts.get_value("--in_reg"), opts.get_value("--out_dat"));
     }
+    if (opts.check("--dat2reg")) {
+        if (!opts.check("--in_dat")) {
+            PrintErrorMessageWithDetail(ERROR_PARAMETER_MISSED, "--in_dat is required.");
+            return ERROR_PARAMETER_MISSED;
+        }
+        if (!opts.check("--out_reg")) {
+            PrintErrorMessageWithDetail(ERROR_PARAMETER_MISSED, "--out_reg is required.");
+            return ERROR_PARAMETER_MISSED;
+        }
+        return dat2reg(opts.get_value("--in_dat"), opts.get_value("--out_reg"));
+    }
+    return SUCCEED;
 }
