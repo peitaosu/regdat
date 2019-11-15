@@ -20,6 +20,10 @@
 #define REG_VER_MINOR              1
 #endif // !REG_VER_MINOR
 
+#ifndef REG_VER_STRING
+#define REG_VER_STRING             L"Windows Registry Editor Version 5.00"
+#endif // !REG_VER_STRING
+
 #ifndef SUCCEED
 #define SUCCEED  0
 #endif // !SECCEED

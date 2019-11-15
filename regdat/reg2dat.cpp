@@ -245,7 +245,7 @@ int dat2reg(std::string in_dat_path, std::string out_reg_path) {
     ORHKEY off_hive;
     std::vector<std::wstring> reg_lines;
     OROpenHive(in_dat_path_w.c_str(), &off_hive);
-    reg_lines.push_back(L"Windows Registry Editor Version 5.00");
+    reg_lines.push_back(REG_VER_STRING);
     enumerate_keys(off_hive, L"", reg_lines);
     if (file_exists(out_reg_path)) {
         if (!delete_file(out_reg_path)) {
