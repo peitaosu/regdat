@@ -140,6 +140,87 @@ int reg2dat(std::string in_reg_path, std::string out_dat_path)
     return SUCCEED;
 }
 
+int enumerate_keys(ORHKEY off_key, std::wstring key_name, std::vector<std::wstring>& reg_lines)
+{
+    DWORD    sub_keys_count;
+    DWORD    values_count;
+    DWORD    size;
+    DWORD    type;
+    DWORD    data_len;
+    ORHKEY   off_key_next;
+    WCHAR    value[MAX_REG_VALUE_NAME_SIZE];
+    WCHAR    sub_key[MAX_REG_KEY_NAME_SIZE];
+    DWORD    i;
+
+    if (key_name != L"") {
+        std::wstring key_name_string = L"[" + key_name + L"]";
+        reg_lines.push_back(key_name_string);
+    }
+
+    if (ORQueryInfoKey(off_key, NULL, NULL, &sub_keys_count, NULL, NULL, &values_count, NULL, NULL, NULL, NULL) != ERROR_SUCCESS)
+        return ERROR_QUERY_INFO_FAILED;
+
+    for (i = 0; i < values_count; i++) {
+        memset(value, 0, sizeof(value));
+        size = MAX_REG_VALUE_NAME_SIZE;
+        type = 0;
+        data_len = 0;
+
+        if (OREnumValue(off_key, i, value, &size, &type, NULL, &data_len) != ERROR_MORE_DATA)
+            continue;
+
+        LPBYTE data = new BYTE[data_len + 2];
+        if (!data) continue;
+        memset(data, 0, data_len + 2);
+
+        if (OREnumValue(off_key, i, value, &size, &type, data, &data_len) != ERROR_SUCCESS)
+        {
+            delete[] data;
+            continue;
+        }
+        switch (type) {
+            case REG_DWORD:
+                break;
+            case REG_SZ:
+                break;
+            case REG_BINARY:
+                break;
+            case REG_QWORD:
+                break;
+            case REG_MULTI_SZ:
+                break;
+            case REG_EXPAND_SZ:
+                break;
+            default:
+                break;
+        }
+        delete[] data;
+    }
+
+    for (i = 0; i < sub_keys_count; i++) {
+        memset(sub_key, 0, sizeof(sub_key));
+        size = MAX_REG_KEY_NAME_SIZE;
+
+        if (OREnumKey(off_key, i, sub_key, &size, NULL, NULL, NULL) != ERROR_SUCCESS)
+            continue;
+
+        std::wstring next_key;
+        if (key_name != L"") {
+            next_key = key_name + L"\\" + std::wstring(sub_key);
+        }
+        else {
+            next_key = std::wstring(sub_key);
+        }
+        
+        if (OROpenKey(off_key, sub_key, &off_key_next) == ERROR_SUCCESS)
+        {
+            enumerate_keys(off_key_next, next_key, reg_lines);
+            ORCloseKey(off_key_next);
+        }
+    }
+    return SUCCEED;
+}
+
 int dat2reg(std::string in_dat_path, std::string out_reg_path) {
     if (!file_exists(in_dat_path)) {
         PrintErrorMessageWithDetail(ERROR_DAT_FILE_NOT_FOUND, in_dat_path + " not exists.");
@@ -147,7 +228,21 @@ int dat2reg(std::string in_dat_path, std::string out_reg_path) {
     }
     std::wstring in_dat_path_w = string2wstring(in_dat_path);
     ORHKEY off_hive;
+    std::vector<std::wstring> reg_lines;
     OROpenHive(in_dat_path_w.c_str(), &off_hive);
+    reg_lines.push_back(L"Windows Registry Editor Version 5.00");
+    enumerate_keys(off_hive, L"", reg_lines);
+    if (file_exists(out_reg_path)) {
+        if (!delete_file(out_reg_path)) {
+            PrintErrorMessageWithDetail(ERROR_DELETE_REG_FAILED, out_reg_path);
+            ORCloseHive(off_hive);
+            return ERROR_DELETE_REG_FAILED;
+        }
+    }
+    std::wofstream out_file(string2wstring(out_reg_path));
+    for (std::wstring reg_line : reg_lines)
+        out_file << reg_line << "\n";
+    out_file.close();
     ORCloseHive(off_hive);
     return SUCCEED;
 }
