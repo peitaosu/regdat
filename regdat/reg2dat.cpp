@@ -67,7 +67,7 @@ int reg2dat(std::string in_reg_path, std::string out_dat_path)
         }
         if (value_data_string.at(0) == '"') {
             std::wstring value_data = value_data_string.substr(1, value_data_string.length() - 2);
-            ORSetValue(created_key, value_name, REG_SZ, (LPBYTE)value_data.c_str(), sizeof(value_data));
+            ORSetValue(created_key, value_name, REG_SZ, (LPBYTE)value_data.c_str(), (DWORD)((value_data.size() + 1) * sizeof(wchar_t)));
             continue;
         }
         if (value_data_string.substr(0, 6) == L"dword:") {
@@ -154,6 +154,7 @@ int enumerate_keys(ORHKEY off_key, std::wstring key_name, std::vector<std::wstri
 
     if (key_name != L"") {
         std::wstring key_name_string = L"[" + key_name + L"]";
+        reg_lines.push_back(L"");
         reg_lines.push_back(key_name_string);
     }
 
@@ -178,23 +179,37 @@ int enumerate_keys(ORHKEY off_key, std::wstring key_name, std::vector<std::wstri
             delete[] data;
             continue;
         }
-        switch (type) {
-            case REG_DWORD:
-                break;
-            case REG_SZ:
-                break;
-            case REG_BINARY:
-                break;
-            case REG_QWORD:
-                break;
-            case REG_MULTI_SZ:
-                break;
-            case REG_EXPAND_SZ:
-                break;
-            default:
-                break;
+        std::wstring value_name = L"@";
+        if (std::wstring(value) != L"") {
+            value_name = L"\"" + std::wstring(value) + L"\"";
         }
-        delete[] data;
+        if (type == REG_DWORD) {
+            delete[] data;
+            continue;
+        }
+        if (type == REG_SZ) {
+            std::wstring value_data = L"";
+            for (int index = 0; index < int(data_len - 2); index = index + 2) value_data += data[index];
+            reg_lines.push_back(value_name + L"=\"" + value_data + L"\"");
+            delete[] data;
+            continue;
+        }
+        if (type == REG_BINARY) {
+            delete[] data;
+            continue;
+        }
+        if (type == REG_QWORD) {
+            delete[] data;
+            continue;
+        }
+        if (type == REG_MULTI_SZ) {
+            delete[] data;
+            continue;
+        }
+        if (type == REG_EXPAND_SZ) {
+            delete[] data;
+            continue;
+        }
     }
 
     for (i = 0; i < sub_keys_count; i++) {
