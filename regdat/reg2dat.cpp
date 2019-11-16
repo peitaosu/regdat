@@ -150,7 +150,6 @@ int enumerate_keys(ORHKEY off_key, std::wstring key_name, std::vector<std::wstri
     ORHKEY   off_key_next;
     WCHAR    value[MAX_REG_VALUE_NAME_SIZE];
     WCHAR    sub_key[MAX_REG_KEY_NAME_SIZE];
-    DWORD    i;
 
     if (key_name != L"") {
         std::wstring key_name_string = L"[" + key_name + L"]";
@@ -161,7 +160,7 @@ int enumerate_keys(ORHKEY off_key, std::wstring key_name, std::vector<std::wstri
     if (ORQueryInfoKey(off_key, NULL, NULL, &sub_keys_count, NULL, NULL, &values_count, NULL, NULL, NULL, NULL) != ERROR_SUCCESS)
         return ERROR_QUERY_INFO_FAILED;
 
-    for (i = 0; i < values_count; i++) {
+    for (DWORD i = 0; i < values_count; i++) {
         memset(value, 0, sizeof(value));
         size = MAX_REG_VALUE_NAME_SIZE;
         type = 0;
@@ -207,12 +206,18 @@ int enumerate_keys(ORHKEY off_key, std::wstring key_name, std::vector<std::wstri
             continue;
         }
         if (type == REG_EXPAND_SZ) {
+            std::wstring value_data = L"";
+            for (int index = 0; index < int(data_len - 2); index = index + 2) {
+                value_data += std::to_wstring(data[index]);
+                if (index != int(data_len - 2) - 1) value_data += L",";
+            }
+            reg_lines.push_back(value_name + L"=hex(2):" + value_data);
             delete[] data;
             continue;
         }
     }
 
-    for (i = 0; i < sub_keys_count; i++) {
+    for (DWORD i = 0; i < sub_keys_count; i++) {
         memset(sub_key, 0, sizeof(sub_key));
         size = MAX_REG_KEY_NAME_SIZE;
 
