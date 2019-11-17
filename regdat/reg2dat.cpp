@@ -202,6 +202,12 @@ int enumerate_keys(ORHKEY off_key, std::wstring key_name, std::vector<std::wstri
             continue;
         }
         if (type == REG_MULTI_SZ) {
+            std::wstring value_data = L"";
+            for (int index = 0; index < int(data_len - 2); index = index + 2) {
+                value_data += std::to_wstring(data[index]);
+                if (index != int(data_len - 2) - 1) value_data += L",";
+            }
+            reg_lines.push_back(value_name + L"=hex(7):" + value_data);
             delete[] data;
             continue;
         }
