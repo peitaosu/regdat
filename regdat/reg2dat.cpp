@@ -178,6 +178,11 @@ int enumerate_keys(ORHKEY off_key, std::wstring key_name, std::vector<std::wstri
             value_name = L"\"" + std::wstring(value) + L"\"";
         }
         if (type == REG_DWORD) {
+            std::wstring value_data = L"";
+            for (int index = 3; index >= 0; index--) {
+                value_data += (data[index] > 16 ? string2wstring(dec2hex(data[index])) : L"0" + string2wstring(dec2hex(data[index])));
+            }
+            reg_lines.push_back(value_name + L"=dword:" + value_data);
             delete[] data;
             continue;
         }
@@ -191,7 +196,7 @@ int enumerate_keys(ORHKEY off_key, std::wstring key_name, std::vector<std::wstri
         if (type == REG_BINARY) {
             std::wstring value_data = L"";
             for (int index = 0; index < int(data_len); index++) {
-                value_data += (data[index] != 0 ? string2wstring(dec2hex(data[index])) : L"00");
+                value_data += (data[index] > 16 ? string2wstring(dec2hex(data[index])) : L"0" + string2wstring(dec2hex(data[index])));
                 if (index != int(data_len - 1)) value_data += L",";
             }
             reg_lines.push_back(value_name + L"=hex:" + value_data);
@@ -205,7 +210,7 @@ int enumerate_keys(ORHKEY off_key, std::wstring key_name, std::vector<std::wstri
         if (type == REG_MULTI_SZ) {
             std::wstring value_data = L"";
             for (int index = 0; index < int(data_len - 2); index = index + 2) {
-                value_data += (data[index] != 0 ? string2wstring(dec2hex(data[index])) : L"00") + L",00";
+                value_data += (data[index] > 16 ? string2wstring(dec2hex(data[index])) : L"0" + string2wstring(dec2hex(data[index]))) + L",00";
                 if (index != int(data_len - 2) - 2) value_data += L",";
             }
             value_data += L",00,00";
@@ -216,7 +221,7 @@ int enumerate_keys(ORHKEY off_key, std::wstring key_name, std::vector<std::wstri
         if (type == REG_EXPAND_SZ) {
             std::wstring value_data = L"";
             for (int index = 0; index < int(data_len - 2); index = index + 2) {
-                value_data += (data[index] != 0 ? string2wstring(dec2hex(data[index])) : L"00") + L",00";
+                value_data += (data[index] > 16 ? string2wstring(dec2hex(data[index])) : L"0" + string2wstring(dec2hex(data[index]))) + L",00";
                 if (index != int(data_len - 2) - 2) value_data += L",";
             }
             value_data += L",00,00";
