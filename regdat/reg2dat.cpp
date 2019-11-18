@@ -204,8 +204,8 @@ int enumerate_keys(ORHKEY off_key, std::wstring key_name, std::vector<std::wstri
         if (type == REG_MULTI_SZ) {
             std::wstring value_data = L"";
             for (int index = 0; index < int(data_len - 2); index = index + 2) {
-                value_data += std::to_wstring(data[index]);
-                if (index != int(data_len - 2) - 1) value_data += L",";
+                value_data += (data[index] != 0 ? std::to_wstring(data[index]) : L"00") + L",00";
+                if (index != int(data_len - 2) - 2) value_data += L",";
             }
             reg_lines.push_back(value_name + L"=hex(7):" + value_data);
             delete[] data;
@@ -214,8 +214,8 @@ int enumerate_keys(ORHKEY off_key, std::wstring key_name, std::vector<std::wstri
         if (type == REG_EXPAND_SZ) {
             std::wstring value_data = L"";
             for (int index = 0; index < int(data_len - 2); index = index + 2) {
-                value_data += std::to_wstring(data[index]);
-                if (index != int(data_len - 2) - 1) value_data += L",";
+                value_data += (data[index] != 0 ? std::to_wstring(data[index]) : L"00") + L",00";
+                if (index != int(data_len - 2) - 2) value_data += L",";
             }
             reg_lines.push_back(value_name + L"=hex(2):" + value_data);
             delete[] data;
