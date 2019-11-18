@@ -19,3 +19,19 @@ std::string wstring2string(std::wstring wstr) {
     std::string str(wstr.begin(), wstr.end());
     return str;
 }
+
+std::string dec2hex(int dec)
+{
+    std::stringstream ss;
+    ss << std::hex << dec;
+    return ss.str();
+}
+
+int hex2dec(std::string hex)
+{
+    std::stringstream ss;
+    int dec;
+    ss << hex;
+    ss >> std::hex >> dec;
+    return dec;
+}

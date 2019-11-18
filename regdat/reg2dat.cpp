@@ -142,14 +142,7 @@ int reg2dat(std::string in_reg_path, std::string out_dat_path)
 
 int enumerate_keys(ORHKEY off_key, std::wstring key_name, std::vector<std::wstring>& reg_lines)
 {
-    DWORD    sub_keys_count;
-    DWORD    values_count;
-    DWORD    size;
-    DWORD    type;
-    DWORD    data_len;
-    ORHKEY   off_key_next;
-    WCHAR    value[MAX_REG_VALUE_NAME_SIZE];
-    WCHAR    sub_key[MAX_REG_KEY_NAME_SIZE];
+    
 
     if (key_name != L"") {
         std::wstring key_name_string = L"[" + key_name + L"]";
@@ -157,14 +150,16 @@ int enumerate_keys(ORHKEY off_key, std::wstring key_name, std::vector<std::wstri
         reg_lines.push_back(key_name_string);
     }
 
+    DWORD sub_keys_count, values_count;
     if (ORQueryInfoKey(off_key, NULL, NULL, &sub_keys_count, NULL, NULL, &values_count, NULL, NULL, NULL, NULL) != ERROR_SUCCESS)
         return ERROR_QUERY_INFO_FAILED;
 
     for (DWORD i = 0; i < values_count; i++) {
+        WCHAR value[MAX_REG_VALUE_NAME_SIZE];
         memset(value, 0, sizeof(value));
-        size = MAX_REG_VALUE_NAME_SIZE;
-        type = 0;
-        data_len = 0;
+        DWORD size = MAX_REG_VALUE_NAME_SIZE;
+        DWORD type = 0;
+        DWORD data_len = 0;
 
         if (OREnumValue(off_key, i, value, &size, &type, NULL, &data_len) != ERROR_MORE_DATA)
             continue;
@@ -194,6 +189,12 @@ int enumerate_keys(ORHKEY off_key, std::wstring key_name, std::vector<std::wstri
             continue;
         }
         if (type == REG_BINARY) {
+            std::wstring value_data = L"";
+            for (int index = 0; index < int(data_len); index++) {
+                value_data += (data[index] != 0 ? string2wstring(dec2hex(data[index])) : L"00");
+                if (index != int(data_len - 1)) value_data += L",";
+            }
+            reg_lines.push_back(value_name + L"=hex:" + value_data);
             delete[] data;
             continue;
         }
@@ -204,9 +205,10 @@ int enumerate_keys(ORHKEY off_key, std::wstring key_name, std::vector<std::wstri
         if (type == REG_MULTI_SZ) {
             std::wstring value_data = L"";
             for (int index = 0; index < int(data_len - 2); index = index + 2) {
-                value_data += (data[index] != 0 ? std::to_wstring(data[index]) : L"00") + L",00";
+                value_data += (data[index] != 0 ? string2wstring(dec2hex(data[index])) : L"00") + L",00";
                 if (index != int(data_len - 2) - 2) value_data += L",";
             }
+            value_data += L",00,00";
             reg_lines.push_back(value_name + L"=hex(7):" + value_data);
             delete[] data;
             continue;
@@ -214,9 +216,10 @@ int enumerate_keys(ORHKEY off_key, std::wstring key_name, std::vector<std::wstri
         if (type == REG_EXPAND_SZ) {
             std::wstring value_data = L"";
             for (int index = 0; index < int(data_len - 2); index = index + 2) {
-                value_data += (data[index] != 0 ? std::to_wstring(data[index]) : L"00") + L",00";
+                value_data += (data[index] != 0 ? string2wstring(dec2hex(data[index])) : L"00") + L",00";
                 if (index != int(data_len - 2) - 2) value_data += L",";
             }
+            value_data += L",00,00";
             reg_lines.push_back(value_name + L"=hex(2):" + value_data);
             delete[] data;
             continue;
@@ -224,8 +227,9 @@ int enumerate_keys(ORHKEY off_key, std::wstring key_name, std::vector<std::wstri
     }
 
     for (DWORD i = 0; i < sub_keys_count; i++) {
+        WCHAR sub_key[MAX_REG_KEY_NAME_SIZE];
         memset(sub_key, 0, sizeof(sub_key));
-        size = MAX_REG_KEY_NAME_SIZE;
+        DWORD size = MAX_REG_KEY_NAME_SIZE;
 
         if (OREnumKey(off_key, i, sub_key, &size, NULL, NULL, NULL) != ERROR_SUCCESS)
             continue;
@@ -238,6 +242,7 @@ int enumerate_keys(ORHKEY off_key, std::wstring key_name, std::vector<std::wstri
             next_key = std::wstring(sub_key);
         }
         
+        ORHKEY off_key_next;
         if (OROpenKey(off_key, sub_key, &off_key_next) == ERROR_SUCCESS)
         {
             enumerate_keys(off_key_next, next_key, reg_lines);
