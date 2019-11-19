@@ -10,8 +10,8 @@
 int main(int argc, char **argv)
 {
     Options opts(argc, argv);
-    if (opts.check("--help") || opts.check("-h")) {
-        std::cout << "Usage:\n\tregdat.exe --reg2dat --in_reg <path_to_reg_file> --out_dat <path_to_dat_file>\n\tregdat.exe --dat2reg --in_dat <path_to_dat_file> --out_reg <path_to_reg_file>\n\tregdat.exe -h\\--help" << std::endl;
+    if (!opts.check("--reg2dat") && !opts.check("--dat2reg")) {
+        std::cout << "Usage:\n\tregdat.exe --reg2dat --in_reg <path_to_reg_file> --out_dat <path_to_dat_file>\n\tregdat.exe --dat2reg --in_dat <path_to_dat_file> --out_reg <path_to_reg_file>" << std::endl;
         return SUCCEED;
     }
     if (opts.check("--reg2dat")) {

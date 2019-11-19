@@ -4,16 +4,16 @@
 #include <map>
 
 static const std::map<int, std::string> Errors = {
-    {SUCCEED, "Succeed."},
-    {ERROR_REG_FILE_NOT_FOUND, ".reg file not found."},
-    {ERROR_DAT_FILE_NOT_FOUND, ".dat file not found."},
-    {ERROR_PARAMETER_MISSED, "Required parameter missed."},
-    {ERROR_OPEN_HIVE_FAILED, "Open registry hive failed."},
-    {ERROR_CREATE_HIVE_FAILED, "Create registry hive failed."},
-    {ERROR_CREATE_KEY_FAILED, "Create registry key failed."},
-    {ERROR_QUERY_INFO_FAILED, "Query information failed."},
-    {ERROR_DELETE_DAT_FAILED, "Delete dat file failed."},
-    {ERROR_DELETE_REG_FAILED, "Delete reg file failed."},
+    {SUCCEED, "SUCCEED"},
+    {ERROR_REG_FILE_NOT_FOUND, "REG FILE NOT FOUND"},
+    {ERROR_DAT_FILE_NOT_FOUND, "DAT FILE NOT FOUND"},
+    {ERROR_PARAMETER_MISSED, "REQUIRED PARAMETER MISSED"},
+    {ERROR_OPEN_HIVE_FAILED, "OPEN REGISTRY HIVE FAILED"},
+    {ERROR_CREATE_HIVE_FAILED, "CREATE REGISTRY HIVE FAILED"},
+    {ERROR_CREATE_KEY_FAILED, "CREATE REGISTRY KEY FAILED"},
+    {ERROR_QUERY_INFO_FAILED, "QUERY INFORMATION FAILED"},
+    {ERROR_DELETE_DAT_FAILED, "DELETE DAT FILE FAILED"},
+    {ERROR_DELETE_REG_FAILED, "DELETE REG FILE FAILED"},
 };
 std::string GetErrorMessage(int error);
 void PrintErrorMessage(int error);
