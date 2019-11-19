@@ -164,8 +164,6 @@
     <ClInclude Include="error.h" />
     <ClInclude Include="Options.h" />
     <ClInclude Include="reg2dat.h" />
-    <ClInclude Include="RegKey.h" />
-    <ClInclude Include="RegValue.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="common.cpp" />
@@ -173,8 +171,6 @@
     <ClCompile Include="Options.cpp" />
     <ClCompile Include="reg2dat.cpp" />
     <ClCompile Include="regdat.cpp" />
-    <ClCompile Include="RegKey.cpp" />
-    <ClCompile Include="RegValue.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
