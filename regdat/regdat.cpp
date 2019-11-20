@@ -16,25 +16,25 @@ int main(int argc, char **argv)
     }
     if (opts.check("--reg2dat")) {
         if (!opts.check("--in_reg")) {
-            PrintErrorMessageWithDetail(ERROR_PARAMETER_MISSED, "--in_reg is required.");
+            regdat::print_error_detail(ERROR_PARAMETER_MISSED, "--in_reg is required.");
             return ERROR_PARAMETER_MISSED;
         }
         if (!opts.check("--out_dat")) {
-            PrintErrorMessageWithDetail(ERROR_PARAMETER_MISSED, "--out_dat is required.");
+            regdat::print_error_detail(ERROR_PARAMETER_MISSED, "--out_dat is required.");
             return ERROR_PARAMETER_MISSED;
         }
-        return reg2dat(opts.get_value("--in_reg"), opts.get_value("--out_dat"));
+        return regdat::reg2dat(opts.get_value("--in_reg"), opts.get_value("--out_dat"));
     }
     if (opts.check("--dat2reg")) {
         if (!opts.check("--in_dat")) {
-            PrintErrorMessageWithDetail(ERROR_PARAMETER_MISSED, "--in_dat is required.");
+            regdat::print_error_detail(ERROR_PARAMETER_MISSED, "--in_dat is required.");
             return ERROR_PARAMETER_MISSED;
         }
         if (!opts.check("--out_reg")) {
-            PrintErrorMessageWithDetail(ERROR_PARAMETER_MISSED, "--out_reg is required.");
+            regdat::print_error_detail(ERROR_PARAMETER_MISSED, "--out_reg is required.");
             return ERROR_PARAMETER_MISSED;
         }
-        return dat2reg(opts.get_value("--in_dat"), opts.get_value("--out_reg"));
+        return regdat::dat2reg(opts.get_value("--in_dat"), opts.get_value("--out_reg"));
     }
     return SUCCEED;
 }
