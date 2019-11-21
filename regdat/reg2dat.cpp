@@ -22,7 +22,7 @@ namespace regdat {
                 std::wstring line_str = L"";
                 for (int i = 0; i < line.length(); i++) {
                     // remove \0 and <0 characters
-                    if (line[i] <= 0 || line[i] == '\r' || line[i] == 32) continue;
+                    if (line[i] <= 0 || line[i] == '\r') continue;
                     line_str += line[i];
                 }
                 if (line_str.length() == 0) continue;
