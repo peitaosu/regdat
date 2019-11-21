@@ -4,6 +4,7 @@
 #include <map>
 
 namespace regdat {
+    // errors
     static const std::map<int, std::string> Errors = {
         {SUCCEED, "SUCCEED"},
         {ERROR_REG_FILE_NOT_FOUND, "REG FILE NOT FOUND"},
@@ -18,9 +19,13 @@ namespace regdat {
         {DEBUG_INFO, "DEBUG"},
         {USER_INFO, "INFOR"},
     };
+    // get error message according to error number
     std::string get_error_message(int error);
+    // print error with error number
     void print_error(int error);
+    // print error with error number and different level
     void print_error(int level, int error);
+    // print error with error number and different level and detail string
     void print_error(int level, int error, std::string detail);
 
 }
