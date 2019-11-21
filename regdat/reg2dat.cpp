@@ -51,6 +51,7 @@ namespace regdat {
                 continue;
             }
             if (reg_line.at(0) == '['){
+                created_key = off_hive;
                 std::wstring key_string = reg_line.substr(1, reg_line.length() - 2);
                 print_error(2, DEBUG_INFO, "Processing Registry Key " + wstring2string(key_string));
                 std::wistringstream is(key_string);
@@ -77,7 +78,7 @@ namespace regdat {
             }
             if (value_data_string.substr(0, 6) == L"dword:") {
                 std::wstring value_data = value_data_string.substr(6, value_data_string.length() - 6);
-                DWORD value = std::stoi(value_data, 0, 16);
+                DWORD value = std::stoul(value_data, 0, 16);
                 ORSetValue(created_key, value_name, REG_DWORD, (LPBYTE)&value, sizeof(value));
                 continue;
             }
@@ -127,7 +128,7 @@ namespace regdat {
                 while (std::getline(is, next_char, L',')) {
                     data = next_char + data;
                 }
-                unsigned long long q_data = std::stoi(data, 0, 16);
+                unsigned long long q_data = std::stoull(data, 0, 16);
                 ORSetValue(created_key, value_name, REG_QWORD, (LPBYTE)&q_data, sizeof(q_data));
                 continue;
             }
@@ -185,7 +186,7 @@ namespace regdat {
             if (type == REG_DWORD) {
                 std::wstring value_data = L"";
                 for (int index = int(data_len - 1); index >= 0; index--) {
-                    value_data += (data[index] > 16 ? string2wstring(dec2hex(data[index])) : L"0" + string2wstring(dec2hex(data[index])));
+                    value_data += (data[index] > 15 ? string2wstring(dec2hex(data[index])) : L"0" + string2wstring(dec2hex(data[index])));
                 }
                 reg_lines.push_back(value_name + L"=dword:" + value_data);
                 delete[] data;
@@ -201,7 +202,7 @@ namespace regdat {
             if (type == REG_BINARY) {
                 std::wstring value_data = L"";
                 for (int index = 0; index < int(data_len); index++) {
-                    value_data += (data[index] > 16 ? string2wstring(dec2hex(data[index])) : L"0" + string2wstring(dec2hex(data[index])));
+                    value_data += (data[index] > 15 ? string2wstring(dec2hex(data[index])) : L"0" + string2wstring(dec2hex(data[index])));
                     if (index != int(data_len - 1)) value_data += L",";
                 }
                 reg_lines.push_back(value_name + L"=hex:" + value_data);
@@ -211,7 +212,7 @@ namespace regdat {
             if (type == REG_QWORD) {
                 std::wstring value_data = L"";
                 for (int index = 0; index < int(data_len); index++) {
-                    value_data += (data[index] > 16 ? string2wstring(dec2hex(data[index])) : L"0" + string2wstring(dec2hex(data[index])));
+                    value_data += (data[index] > 15 ? string2wstring(dec2hex(data[index])) : L"0" + string2wstring(dec2hex(data[index])));
                     if (index != int(data_len) - 1) value_data += L",";
                 }
                 reg_lines.push_back(value_name + L"=hex(b):" + value_data);
@@ -221,7 +222,7 @@ namespace regdat {
             if (type == REG_MULTI_SZ) {
                 std::wstring value_data = L"";
                 for (int index = 0; index < int(data_len - 2); index = index + 2) {
-                    value_data += (data[index] > 16 ? string2wstring(dec2hex(data[index])) : L"0" + string2wstring(dec2hex(data[index]))) + L",00";
+                    value_data += (data[index] > 15 ? string2wstring(dec2hex(data[index])) : L"0" + string2wstring(dec2hex(data[index]))) + L",00";
                     if (index != int(data_len - 2) - 2) value_data += L",";
                 }
                 value_data += L",00,00";
@@ -232,7 +233,7 @@ namespace regdat {
             if (type == REG_EXPAND_SZ) {
                 std::wstring value_data = L"";
                 for (int index = 0; index < int(data_len - 2); index = index + 2) {
-                    value_data += (data[index] > 16 ? string2wstring(dec2hex(data[index])) : L"0" + string2wstring(dec2hex(data[index]))) + L",00";
+                    value_data += (data[index] > 15 ? string2wstring(dec2hex(data[index])) : L"0" + string2wstring(dec2hex(data[index]))) + L",00";
                     if (index != int(data_len - 2) - 2) value_data += L",";
                 }
                 value_data += L",00,00";
