@@ -25,8 +25,16 @@
 #endif // !REG_VER_STRING
 
 #ifndef SUCCEED
-#define SUCCEED  0
+#define SUCCEED                    0
 #endif // !SECCEED
+
+#ifndef DEBUG_INFO
+#define DEBUG_INFO                 1
+#endif // !DEBUG_INFO
+
+#ifndef USER_INFO
+#define USER_INFO                  2
+#endif // !USER_INFO
 
 #ifndef ERROR_REG_FILE_NOT_FOUND
 #define ERROR_REG_FILE_NOT_FOUND   -1

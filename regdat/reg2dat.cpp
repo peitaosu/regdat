@@ -5,8 +5,11 @@
 namespace regdat {
     int reg2dat(std::string in_reg_path, std::string out_dat_path)
     {
+        print_error(2, USER_INFO, "Action: reg2dat");
+        print_error(2, USER_INFO, "Input: --in_reg " + in_reg_path);
+        print_error(2, USER_INFO, "Output: --out_dat " + out_dat_path);
         if (!file_exists(in_reg_path)) {
-            print_error_detail(ERROR_REG_FILE_NOT_FOUND, in_reg_path + " not exists.");
+            print_error(0, ERROR_REG_FILE_NOT_FOUND, in_reg_path + " not exists.");
             return ERROR_REG_FILE_NOT_FOUND;
         }
         std::wifstream in_file(in_reg_path);
@@ -39,7 +42,7 @@ namespace regdat {
         }
         ORHKEY off_hive;
         if (ORCreateHive(&off_hive) != ERROR_SUCCESS) {
-            print_error_detail(ERROR_CREATE_HIVE_FAILED, "Cannot create hive, error code: " + GetLastError());
+            print_error(0, ERROR_CREATE_HIVE_FAILED, "Cannot create hive, error code: " + GetLastError());
             return ERROR_CREATE_HIVE_FAILED;
         }
         ORHKEY created_key = off_hive;
@@ -49,11 +52,12 @@ namespace regdat {
             }
             if (reg_line.at(0) == '['){
                 std::wstring key_string = reg_line.substr(1, reg_line.length() - 2);
+                print_error(2, DEBUG_INFO, "Processing Registry Key " + wstring2string(key_string));
                 std::wistringstream is(key_string);
                 std::wstring next_key_name;
                 while (std::getline(is, next_key_name, L'\\')) {
                     if (ORCreateKey(created_key, next_key_name.c_str(), NULL, REG_OPTION_NON_VOLATILE, NULL, &created_key, NULL) != ERROR_SUCCESS) {
-                        print_error_detail(ERROR_CREATE_KEY_FAILED, "Cannot create key: " + wstring2string(next_key_name));
+                        print_error(0, ERROR_CREATE_KEY_FAILED, "Cannot create key: " + wstring2string(next_key_name));
                         return ERROR_CREATE_KEY_FAILED;
                     }
                 }
@@ -131,7 +135,7 @@ namespace regdat {
         std::wstring out_dat_path_w(out_dat_path.begin(), out_dat_path.end());
         if (file_exists(out_dat_path)) {
             if (!delete_file(out_dat_path)) {
-                print_error_detail(ERROR_DELETE_DAT_FAILED, out_dat_path);
+                print_error(0, ERROR_DELETE_DAT_FAILED, out_dat_path);
                 ORCloseHive(off_hive);
                 return ERROR_DELETE_DAT_FAILED;
             }
@@ -144,8 +148,8 @@ namespace regdat {
     int enumerate_keys(ORHKEY off_key, std::wstring key_name, std::vector<std::wstring>& reg_lines)
     {
     
-
         if (key_name != L"") {
+            print_error(2, DEBUG_INFO, "Processing Registry Key " + wstring2string(key_name));
             std::wstring key_name_string = L"[" + key_name + L"]";
             reg_lines.push_back(L"");
             reg_lines.push_back(key_name_string);
@@ -265,8 +269,11 @@ namespace regdat {
     }
 
     int dat2reg(std::string in_dat_path, std::string out_reg_path) {
+        print_error(2, USER_INFO, "Action: dat2reg");
+        print_error(2, USER_INFO, "Input: --in_dat " + in_dat_path);
+        print_error(2, USER_INFO, "Output: --out_reg " + out_reg_path);
         if (!file_exists(in_dat_path)) {
-            print_error_detail(ERROR_DAT_FILE_NOT_FOUND, in_dat_path + " not exists.");
+            print_error(0, ERROR_DAT_FILE_NOT_FOUND, in_dat_path + " not exists.");
             return ERROR_DAT_FILE_NOT_FOUND;
         }
         std::wstring in_dat_path_w = string2wstring(in_dat_path);
@@ -277,7 +284,7 @@ namespace regdat {
         enumerate_keys(off_hive, L"", reg_lines);
         if (file_exists(out_reg_path)) {
             if (!delete_file(out_reg_path)) {
-                print_error_detail(ERROR_DELETE_REG_FAILED, out_reg_path);
+                print_error(0, ERROR_DELETE_REG_FAILED, out_reg_path);
                 ORCloseHive(off_hive);
                 return ERROR_DELETE_REG_FAILED;
             }

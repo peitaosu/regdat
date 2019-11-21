@@ -15,8 +15,12 @@ namespace regdat {
         {ERROR_QUERY_INFO_FAILED, "QUERY INFORMATION FAILED"},
         {ERROR_DELETE_DAT_FAILED, "DELETE DAT FILE FAILED"},
         {ERROR_DELETE_REG_FAILED, "DELETE REG FILE FAILED"},
+        {DEBUG_INFO, "DEBUG"},
+        {USER_INFO, "INFOR"},
     };
     std::string get_error_message(int error);
     void print_error(int error);
-    void print_error_detail(int error, std::string detail);
+    void print_error(int level, int error);
+    void print_error(int level, int error, std::string detail);
+
 }

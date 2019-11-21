@@ -8,11 +8,30 @@ namespace regdat {
 
     void print_error(int error)
     {
-        std::cout << "[Error] " << get_error_message(error) << std::endl;
+        std::cout << "[ERROR] " << get_error_message(error) << std::endl;
     }
 
-    void print_error_detail(int error, std::string detail)
+    void print_error(int level, int error)
     {
-        std::cout << "[Error] " << get_error_message(error) << " : " << detail << std::endl;
+        std::string level_string = "[ERROR]";
+        if (level == 1) {
+            level_string = "[WARNN]";
+        }
+        if (level == 2) {
+            level_string = "[INFOR]";
+        }
+        std::cout << level_string << " " << get_error_message(error) << std::endl;
+    }
+
+    void print_error(int level, int error, std::string detail)
+    {
+        std::string level_string = "[ERROR]";
+        if (level == 1) {
+            level_string = "[WARNN]";
+        }
+        if (level == 2) {
+            level_string = "[INFOR]";
+        }
+        std::cout << level_string << " " << get_error_message(error) << " : " << detail << std::endl;
     }
 }
