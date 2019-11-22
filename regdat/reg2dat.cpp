@@ -203,115 +203,118 @@ namespace regdat {
     int enumerate_keys(ORHKEY off_key, std::wstring key_name, std::vector<std::wstring>& reg_lines)
     {
     
-        // create registry key line
-        if (key_name != L"") {
-            print_error(2, DEBUG_INFO, "Processing Registry Key " + wstring2string(key_name));
-            std::wstring key_name_string = L"[" + key_name + L"]";
-            reg_lines.push_back(L"");
-            reg_lines.push_back(key_name_string);
-        }
 
         // get count of subkeys and values
         DWORD sub_keys_count, values_count;
         if (ORQueryInfoKey(off_key, NULL, NULL, &sub_keys_count, NULL, NULL, &values_count, NULL, NULL, NULL, NULL) != ERROR_SUCCESS)
             return ERROR_QUERY_INFO_FAILED;
 
-        // enumerate all values
-        for (DWORD i = 0; i < values_count; i++) {
-            WCHAR value[MAX_REG_VALUE_NAME_SIZE];
-            memset(value, 0, sizeof(value));
-            DWORD size = MAX_REG_VALUE_NAME_SIZE;
-            DWORD type = 0;
-            DWORD data_len = 0;
-
-            // get value data length
-            if (OREnumValue(off_key, i, value, &size, &type, NULL, &data_len) != ERROR_MORE_DATA)
-                continue;
-
-            LPBYTE data = new BYTE[data_len + 2];
-            if (!data) continue;
-            memset(data, 0, data_len + 2);
-
-            // get value data
-            if (OREnumValue(off_key, i, value, &size, &type, data, &data_len) != ERROR_SUCCESS)
-            {
-                delete[] data;
-                continue;
+        if (values_count > 0) {
+            // create registry key line
+            if (key_name != L"") {
+                print_error(2, DEBUG_INFO, "Processing Registry Key " + wstring2string(key_name));
+                std::wstring key_name_string = L"[" + key_name + L"]";
+                reg_lines.push_back(L"");
+                reg_lines.push_back(key_name_string);
             }
 
-            // @ for default value
-            std::wstring value_name = L"@";
-            if (std::wstring(value) != L"") {
-                value_name = L"\"" + std::wstring(value) + L"\"";
-            }
-            // REG_DWORD
-            if (type == REG_DWORD) {
-                std::wstring value_data = L"";
-                for (int index = int(data_len - 1); index >= 0; index--) {
-                    value_data += (data[index] > 15 ? string2wstring(dec2hex(data[index])) : L"0" + string2wstring(dec2hex(data[index])));
+            // enumerate all values
+            for (DWORD i = 0; i < values_count; i++) {
+                WCHAR value[MAX_REG_VALUE_NAME_SIZE];
+                memset(value, 0, sizeof(value));
+                DWORD size = MAX_REG_VALUE_NAME_SIZE;
+                DWORD type = 0;
+                DWORD data_len = 0;
+
+                // get value data length
+                if (OREnumValue(off_key, i, value, &size, &type, NULL, &data_len) != ERROR_MORE_DATA)
+                    continue;
+
+                LPBYTE data = new BYTE[data_len + 2];
+                if (!data) continue;
+                memset(data, 0, data_len + 2);
+
+                // get value data
+                if (OREnumValue(off_key, i, value, &size, &type, data, &data_len) != ERROR_SUCCESS)
+                {
+                    delete[] data;
+                    continue;
                 }
-                reg_lines.push_back(value_name + L"=dword:" + value_data);
-                delete[] data;
-                continue;
-            }
 
-            // REG_SZ
-            if (type == REG_SZ) {
-                std::wstring value_data = L"";
-                for (int index = 0; index < int(data_len - 2); index = index + 2) value_data += data[index];
-                reg_lines.push_back(value_name + L"=\"" + value_data + L"\"");
-                delete[] data;
-                continue;
-            }
-
-            // REG_BINARY
-            if (type == REG_BINARY) {
-                std::wstring value_data = L"";
-                for (int index = 0; index < int(data_len); index++) {
-                    value_data += (data[index] > 15 ? string2wstring(dec2hex(data[index])) : L"0" + string2wstring(dec2hex(data[index])));
-                    if (index != int(data_len - 1)) value_data += L",";
+                // @ for default value
+                std::wstring value_name = L"@";
+                if (std::wstring(value) != L"") {
+                    value_name = L"\"" + std::wstring(value) + L"\"";
                 }
-                reg_lines.push_back(value_name + L"=hex:" + value_data);
-                delete[] data;
-                continue;
-            }
-
-            // REG_QWORD
-            if (type == REG_QWORD) {
-                std::wstring value_data = L"";
-                for (int index = 0; index < int(data_len); index++) {
-                    value_data += (data[index] > 15 ? string2wstring(dec2hex(data[index])) : L"0" + string2wstring(dec2hex(data[index])));
-                    if (index != int(data_len) - 1) value_data += L",";
+                // REG_DWORD
+                if (type == REG_DWORD) {
+                    std::wstring value_data = L"";
+                    for (int index = int(data_len - 1); index >= 0; index--) {
+                        value_data += (data[index] > 15 ? string2wstring(dec2hex(data[index])) : L"0" + string2wstring(dec2hex(data[index])));
+                    }
+                    reg_lines.push_back(value_name + L"=dword:" + value_data);
+                    delete[] data;
+                    continue;
                 }
-                reg_lines.push_back(value_name + L"=hex(b):" + value_data);
-                delete[] data;
-                continue;
-            }
 
-            // REG_MULTI_SZ
-            if (type == REG_MULTI_SZ) {
-                std::wstring value_data = L"";
-                for (int index = 0; index < int(data_len - 2); index = index + 2) {
-                    value_data += (data[index] > 15 ? string2wstring(dec2hex(data[index])) : L"0" + string2wstring(dec2hex(data[index]))) + L",00";
-                    if (index != int(data_len - 2) - 2) value_data += L",";
+                // REG_SZ
+                if (type == REG_SZ) {
+                    std::wstring value_data = L"";
+                    for (int index = 0; index < int(data_len - 2); index = index + 2) value_data += data[index];
+                    reg_lines.push_back(value_name + L"=\"" + value_data + L"\"");
+                    delete[] data;
+                    continue;
                 }
-                value_data += L",00,00";
-                reg_lines.push_back(value_name + L"=hex(7):" + value_data);
-                delete[] data;
-                continue;
-            }
 
-            // REG_EXPAND_SZ
-            if (type == REG_EXPAND_SZ) {
-                std::wstring value_data = L"";
-                for (int index = 0; index < int(data_len - 2); index = index + 2) {
-                    value_data += (data[index] > 15 ? string2wstring(dec2hex(data[index])) : L"0" + string2wstring(dec2hex(data[index]))) + L",00";
-                    if (index != int(data_len - 2) - 2) value_data += L",";
+                // REG_BINARY
+                if (type == REG_BINARY) {
+                    std::wstring value_data = L"";
+                    for (int index = 0; index < int(data_len); index++) {
+                        value_data += (data[index] > 15 ? string2wstring(dec2hex(data[index])) : L"0" + string2wstring(dec2hex(data[index])));
+                        if (index != int(data_len - 1)) value_data += L",";
+                    }
+                    reg_lines.push_back(value_name + L"=hex:" + value_data);
+                    delete[] data;
+                    continue;
                 }
-                value_data += L",00,00";
-                reg_lines.push_back(value_name + L"=hex(2):" + value_data);
-                delete[] data;
-                continue;
+
+                // REG_QWORD
+                if (type == REG_QWORD) {
+                    std::wstring value_data = L"";
+                    for (int index = 0; index < int(data_len); index++) {
+                        value_data += (data[index] > 15 ? string2wstring(dec2hex(data[index])) : L"0" + string2wstring(dec2hex(data[index])));
+                        if (index != int(data_len) - 1) value_data += L",";
+                    }
+                    reg_lines.push_back(value_name + L"=hex(b):" + value_data);
+                    delete[] data;
+                    continue;
+                }
+
+                // REG_MULTI_SZ
+                if (type == REG_MULTI_SZ) {
+                    std::wstring value_data = L"";
+                    for (int index = 0; index < int(data_len - 2); index = index + 2) {
+                        value_data += (data[index] > 15 ? string2wstring(dec2hex(data[index])) : L"0" + string2wstring(dec2hex(data[index]))) + L",00";
+                        if (index != int(data_len - 2) - 2) value_data += L",";
+                    }
+                    value_data += L",00,00";
+                    reg_lines.push_back(value_name + L"=hex(7):" + value_data);
+                    delete[] data;
+                    continue;
+                }
+
+                // REG_EXPAND_SZ
+                if (type == REG_EXPAND_SZ) {
+                    std::wstring value_data = L"";
+                    for (int index = 0; index < int(data_len - 2); index = index + 2) {
+                        value_data += (data[index] > 15 ? string2wstring(dec2hex(data[index])) : L"0" + string2wstring(dec2hex(data[index]))) + L",00";
+                        if (index != int(data_len - 2) - 2) value_data += L",";
+                    }
+                    value_data += L",00,00";
+                    reg_lines.push_back(value_name + L"=hex(2):" + value_data);
+                    delete[] data;
+                    continue;
+                }
             }
         }
 
