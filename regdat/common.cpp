@@ -36,5 +36,10 @@ namespace regdat {
         ss >> std::hex >> dec;
         return dec;
     }
+    
+    std::chrono::high_resolution_clock::time_point get_current_time()
+    {
+        return std::chrono::high_resolution_clock::now();
+    }
 }
 

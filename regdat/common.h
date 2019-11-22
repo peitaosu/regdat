@@ -2,6 +2,8 @@
 #include <iostream>
 #include <filesystem>
 #include <sstream>
+#include <fstream>
+#include <chrono>
 
 namespace regdat {
     // check file existence
@@ -16,4 +18,6 @@ namespace regdat {
     std::string dec2hex(int dec);
     // hex string to dec int
     int hex2dec(std::string hex);
+    // get current clock time
+    std::chrono::high_resolution_clock::time_point get_current_time();
 }

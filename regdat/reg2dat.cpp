@@ -1,14 +1,14 @@
 #include "reg2dat.h"
-#include <fstream>
-#include <sstream>
+#include "common.h"
 
 namespace regdat {
     int reg2dat(std::string in_reg_path, std::string out_dat_path)
     {
         // print action and input/output for debug
-        print_error(2, USER_INFO, "Action: reg2dat");
+        print_error(2, USER_INFO, "Action Start: reg2dat");
         print_error(2, USER_INFO, "Input: --in_reg " + in_reg_path);
         print_error(2, USER_INFO, "Output: --out_dat " + out_dat_path);
+        auto start_time = get_current_time();
 
         // if input file not exists, return error
         if (!file_exists(in_reg_path)) {
@@ -197,6 +197,13 @@ namespace regdat {
         // save hive to file and close
         ORSaveHive(off_hive, out_dat_path_w.c_str(), REG_VER_MAJOR, REG_VER_MINOR);
         ORCloseHive(off_hive);
+
+        // print end info and execution time
+        auto end_time = get_current_time();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
+        print_error(2, USER_INFO, "Execution Time: " + std::to_string(duration) + " microseconds");
+        print_error(2, USER_INFO, "Action Completed: reg2dat");
+
         return SUCCEED;
     }
 
@@ -351,9 +358,10 @@ namespace regdat {
     int dat2reg(std::string in_dat_path, std::string out_reg_path) {
 
         // print action and input/output for debug
-        print_error(2, USER_INFO, "Action: dat2reg");
+        print_error(2, USER_INFO, "Action Start: dat2reg");
         print_error(2, USER_INFO, "Input: --in_dat " + in_dat_path);
         print_error(2, USER_INFO, "Output: --out_reg " + out_reg_path);
+        auto start_time = get_current_time();
 
         // if input file not exists, return error
         if (!file_exists(in_dat_path)) {
@@ -391,6 +399,13 @@ namespace regdat {
 
         // close registry hive
         ORCloseHive(off_hive);
+
+        // print end info and execution time
+        auto end_time = get_current_time();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
+        print_error(2, USER_INFO, "Execution Time: " + std::to_string(duration) + " microseconds");
+        print_error(2, USER_INFO, "Action Completed: dat2reg");
+
         return SUCCEED;
     }
 }
