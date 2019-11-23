@@ -4,7 +4,7 @@
 ![WDK](https://img.shields.io/badge/WDK-10.0-blue)
 ![Windows](https://img.shields.io/badge/Windows-7%20%7C%2010-blue.svg)
 
-Registry Hive Tool.
+This is a Registry Hive Tool which supported convert registry files between different types, such as reg and dat.
 
 ## dependencies
 * offreg (part of WDK)
