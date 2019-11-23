@@ -1,5 +1,9 @@
 # regdat
 
+[![GitHub license](https://img.shields.io/github/license/peitaosu/regdat)](https://github.com/peitaosu/regdat/blob/master/LICENSE)
+![WDK](https://img.shields.io/badge/WDK-10.0-blue)
+![Windows](https://img.shields.io/badge/Windows-7%20%7C%2010-blue.svg)
+
 Registry Hive Tool.
 
 ## dependencies
