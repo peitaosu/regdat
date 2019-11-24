@@ -9,6 +9,11 @@ This is a Registry Hive Tool which supported convert registry files between diff
 ## dependencies
 * offreg (part of WDK)
 
+## build
+1. Update the path to `offreg.lib` in `regdat.vcxproj`.
+2. Build `regdat.vcxproj\regdat.sln`.
+3. Copy `offreg.dll` to build output folder.
+
 ## supported features
 * reg to dat
 * dat to reg
