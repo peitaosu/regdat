@@ -25,7 +25,7 @@
 namespace regdat {
     std::string get_error_message(int error)
     {
-        if(Errors.find(error) != std::nops){
+        if(Errors.find(error) != Errors.end()){
             return Errors.find(error)->second;
         }else{
             return "Error message undefined.";
