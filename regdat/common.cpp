@@ -25,12 +25,12 @@
 namespace regdat {
     bool file_exists(std::string file_path)
     {
-        return std::experimental::filesystem::exists(file_path.c_str());
+        return std::filesystem::exists(file_path.c_str());
     }
 
     bool delete_file(std::string file_path)
     {
-        return std::experimental::filesystem::remove(file_path.c_str());
+        return std::filesystem::remove(file_path.c_str());
     }
 
     std::wstring string2wstring(std::string str) {
