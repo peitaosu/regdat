@@ -58,6 +58,10 @@
 #define USER_INFO                  2
 #endif // !USER_INFO
 
+#ifndef ERROR_INFO
+#define ERROR_INFO                 3
+#endif // !ERROR_INFO
+
 #ifndef ERROR_REG_FILE_NOT_FOUND
 #define ERROR_REG_FILE_NOT_FOUND   -1
 #endif // !ERROR_REG_FILE_NOT_FOUND
