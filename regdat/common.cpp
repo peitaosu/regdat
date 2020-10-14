@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 #include "common.h"
+#include <windows.h>
 
 namespace regdat {
     bool file_exists(std::string file_path)
@@ -34,12 +35,39 @@ namespace regdat {
     }
 
     std::wstring string2wstring(std::string str) {
-        std::wstring wstr(str.begin(), str.end());
+        int len = MultiByteToWideChar(CP_ACP, 0, (LPCSTR)str.c_str(), str.size(), 0, 0);
+        if (len <= 0) return NULL;
+
+        WCHAR* dest = new WCHAR[len + 1];
+        if (NULL == dest) return NULL;
+
+        MultiByteToWideChar(CP_ACP, 0, (LPCSTR)str.c_str(), str.size(), dest, len);
+        dest[len] = 0;
+
+        if (dest[0] == 0xFEFF) // skip Oxfeff
+            for (int i = 0; i < len; i++)
+                dest[i] = dest[i + 1];
+
+        std::wstring wstr(dest);
+        delete dest;
+
         return wstr;
     }
 
     std::string wstring2string(std::wstring wstr) {
-        std::string str(wstr.begin(), wstr.end());
+        int len = WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), -1, NULL, 0, NULL, NULL);
+
+        if (len <= 0) return std::string("");
+
+        char* dest = new char[len];
+        if (NULL == dest) return std::string("");
+
+        WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), -1, dest, len, NULL, NULL);
+        dest[len - 1] = 0;
+
+        std::string str(dest);
+        delete[] dest;
+
         return str;
     }
 
