@@ -49,7 +49,7 @@ namespace regdat {
                 dest[i] = dest[i + 1];
 
         std::wstring wstr(dest);
-        delete dest;
+        delete[] dest;
 
         return wstr;
     }
