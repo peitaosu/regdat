@@ -44,9 +44,11 @@ namespace regdat {
         MultiByteToWideChar(CP_ACP, 0, (LPCSTR)str.c_str(), str.size(), dest, len);
         dest[len] = 0;
 
-        if (dest[0] == 0xFEFF) // skip Oxfeff
-            for (int i = 0; i < len; i++)
-                dest[i] = dest[i + 1];
+        
+        for (int i = 0; i < len; i++) {
+            if (dest[0] == 0xFEFF) continue;
+            dest[i] = dest[i + 1];
+        }
 
         std::wstring wstr(dest);
         delete[] dest;
