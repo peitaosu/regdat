@@ -11,7 +11,7 @@ This is a Registry Hive Tool which supported convert registry files between diff
 
 ## build
 1. Update the path to `offreg.lib` in `regdat.vcxproj`.
-2. Build `regdat.vcxproj\regdat.sln`.
+2. Build `regdat.vcxproj`.
 3. Copy `offreg.dll` to build output folder.
 
 ## supported features
